@@ -64,14 +64,12 @@
       transition: background 0.3s ease, color 0.3s ease;
     }
 
-    /* Main Container */
     .main-container {
       max-width: 880px;
       width: 100%;
       margin: 0 auto;
     }
 
-    /* Bento Grid */
     .bento-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -116,7 +114,6 @@
       border: 1px solid var(--border-color);
     }
 
-    /* Brand */
     .brand {
       display: flex;
       align-items: center;
@@ -146,7 +143,6 @@
       color: var(--orange);
     }
 
-    /* Theme Toggle */
     .theme-toggle-btn {
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
@@ -168,7 +164,6 @@
       border-color: var(--orange);
     }
 
-    /* Status */
     .status-row {
       display: flex;
       align-items: center;
@@ -230,7 +225,6 @@
       display: block;
     }
 
-    /* Hero */
     .hero-title {
       font-size: 2rem;
       font-weight: 800;
@@ -253,7 +247,6 @@
       backdrop-filter: blur(4px);
     }
 
-    /* Section Title */
     .section-title {
       font-weight: 700;
       font-size: 0.9rem;
@@ -269,7 +262,6 @@
       font-size: 1rem;
     }
 
-    /* Input */
     .input-modern {
       width: 100%;
       padding: 0.8rem 1rem;
@@ -323,7 +315,6 @@
       min-width: 0;
     }
 
-    /* Button */
     .btn-primary {
       background: var(--orange);
       color: white;
@@ -352,7 +343,6 @@
       pointer-events: none;
     }
 
-    /* Result Box */
     .result-box {
       background: var(--orange-light);
       border-radius: 14px;
@@ -376,7 +366,6 @@
       font-size: 0.9rem;
     }
 
-    /* Stats Card */
     .stats-grid {
       display: flex;
       flex-direction: column;
@@ -408,13 +397,11 @@
       letter-spacing: 0.5px;
     }
 
-    /* Footer */
     .footer-text {
       color: var(--text-muted);
       font-size: 0.75rem;
     }
 
-    /* Toast */
     .toast {
       position: fixed;
       bottom: 2rem;
@@ -436,7 +423,7 @@
       transform: translateX(0);
     }
 
-    /* ========== REDIRECT PAGE ========== */
+    /* Redirect Overlay */
     .redirect-overlay {
       display: none;
       position: fixed;
@@ -617,7 +604,6 @@
       transform: translateY(-2px);
     }
 
-    /* Responsive */
     @media (max-width: 700px) {
       .bento-grid {
         grid-template-columns: 1fr;
@@ -801,6 +787,27 @@
       return records;
     }
 
+    async function supabaseFetchOne(shortCode) {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}?short_code=eq.${encodeURIComponent(shortCode)}&select=*`, {
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        }
+      });
+      
+      if (!response.ok) return null;
+      
+      const rows = await response.json();
+      if (rows && rows.length > 0) {
+        return {
+          url: rows[0].url,
+          created_at: rows[0].created_at,
+          clicks: rows[0].clicks || 0
+        };
+      }
+      return null;
+    }
+
     async function supabaseInsert(shortCode, urlData) {
       const response = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}`, {
         method: 'POST',
@@ -877,30 +884,7 @@
     }
 
     window.showSetupGuide = function() {
-      const guide = `
-📋 SETUP SUPABASE:
-1. Buka dashboard Supabase
-2. Pilih project Anda
-3. Buka SQL Editor
-4. Copy & jalankan query ini:
-
-CREATE TABLE links (
-  short_code TEXT PRIMARY KEY,
-  url TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  clicks BIGINT DEFAULT 0
-);
-
-ALTER TABLE links ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Allow all" ON links
-  FOR ALL USING (true);
-
-5. Klik "Run"
-6. Refresh halaman ini
-
-Error saat ini: ${lastError || 'HTTP 404'}
-      `;
+      const guide = `📋 SETUP SUPABASE:\n1. Buka dashboard Supabase\n2. Pilih project Anda\n3. Buka SQL Editor\n4. Copy & jalankan query ini:\n\nCREATE TABLE links (\n  short_code TEXT PRIMARY KEY,\n  url TEXT NOT NULL,\n  created_at TIMESTAMPTZ DEFAULT NOW(),\n  clicks BIGINT DEFAULT 0\n);\n\nALTER TABLE links ENABLE ROW LEVEL SECURITY;\n\nCREATE POLICY "Allow all" ON links\n  FOR ALL USING (true);\n\n5. Klik "Run"\n6. Refresh halaman ini\n\nError saat ini: ${lastError || 'HTTP 404'}`;
       alert(guide);
     };
 
@@ -928,15 +912,14 @@ Error saat ini: ${lastError || 'HTTP 404'}
     }
 
     // ==================== REDIRECT FUNCTIONS ====================
-    function showRedirectOverlay(url) {
+    function startRedirectCountdown(url) {
       targetUrl = url;
-      document.getElementById('mainContent').style.display = 'none';
-      document.getElementById('redirectOverlay').classList.add('show');
-      document.getElementById('redirectUrlDisplay').textContent = url;
       document.getElementById('progressFill').style.width = '100%';
       
       let countdown = 10;
       document.getElementById('countdownNumber').textContent = countdown;
+      
+      if (redirectTimer) clearInterval(redirectTimer);
       
       redirectTimer = setInterval(() => {
         countdown--;
@@ -945,6 +928,7 @@ Error saat ini: ${lastError || 'HTTP 404'}
         
         if (countdown <= 0) {
           clearInterval(redirectTimer);
+          redirectTimer = null;
           window.location.href = targetUrl;
         }
       }, 1000);
@@ -958,6 +942,11 @@ Error saat ini: ${lastError || 'HTTP 404'}
       document.getElementById('mainContent').style.display = '';
       document.getElementById('redirectOverlay').classList.remove('show');
       targetUrl = '';
+      
+      // Bersihkan parameter URL
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
     };
 
     window.goNow = function() {
@@ -1131,22 +1120,30 @@ Error saat ini: ${lastError || 'HTTP 404'}
       
       if (!shortCode) return;
       
+      // Tampilkan overlay segera
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('redirectOverlay').classList.add('show');
+      document.getElementById('redirectUrlDisplay').textContent = '🔍 Mencari URL tujuan...';
+      document.getElementById('countdownNumber').textContent = '...';
+      
       try {
         let urlData = linkDataCache[shortCode];
         
+        // Coba fetch langsung dari Supabase jika tidak ada di cache
         if (!urlData && isOnline) {
           try {
-            const freshData = await supabaseFetchAll();
-            urlData = freshData[shortCode];
+            urlData = await supabaseFetchOne(shortCode);
             if (urlData) {
               linkDataCache[shortCode] = urlData;
+              localStorage.setItem('staa_bento_links', JSON.stringify(linkDataCache));
             }
           } catch (e) {
-            console.warn('Gagal fetch data untuk redirect:', e);
+            console.warn('Gagal fetch dari Supabase:', e);
           }
         }
         
-        if (urlData) {
+        if (urlData && urlData.url) {
+          // Update clicks
           urlData.clicks = (urlData.clicks || 0) + 1;
           
           if (isOnline) {
@@ -1159,13 +1156,29 @@ Error saat ini: ${lastError || 'HTTP 404'}
           
           localStorage.setItem('staa_bento_links', JSON.stringify(linkDataCache));
           
-          // Tampilkan halaman redirect modern
-          showRedirectOverlay(urlData.url);
+          // Tampilkan URL dan mulai countdown
+          document.getElementById('redirectUrlDisplay').textContent = urlData.url;
+          startRedirectCountdown(urlData.url);
         } else {
+          // URL tidak ditemukan
+          document.getElementById('redirectUrlDisplay').textContent = '❌ Short URL tidak ditemukan';
+          document.getElementById('countdownNumber').textContent = '!';
+          
           showToast('❌ Short URL tidak ditemukan', 'error');
+          
+          // Kembali ke halaman utama setelah 3 detik
+          setTimeout(() => {
+            cancelRedirect();
+          }, 3000);
         }
       } catch (e) {
         console.error('Redirect error:', e);
+        document.getElementById('redirectUrlDisplay').textContent = '❌ Terjadi kesalahan';
+        document.getElementById('countdownNumber').textContent = '!';
+        
+        setTimeout(() => {
+          cancelRedirect();
+        }, 3000);
       }
     }
 
@@ -1200,7 +1213,7 @@ Error saat ini: ${lastError || 'HTTP 404'}
         updateStats();
       }
       
-      // Handle redirect
+      // Handle redirect jika ada parameter 'r'
       await handleRedirect();
       
       // Enter key listeners
