@@ -10,9 +10,6 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
-    
-    <!-- Supabase JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <!-- Background Animation -->
@@ -40,6 +37,12 @@
             </p>
         </div>
 
+        <!-- Connection Status -->
+        <div class="connection-status" id="connectionStatus">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Menghubungkan...</span>
+        </div>
+
         <!-- Main Card -->
         <div class="main-card">
             <!-- Input Section -->
@@ -62,11 +65,30 @@
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
-                    <button type="button" id="submitBtn" class="btn btn-primary">
-                        <i class="fas fa-scissors"></i>
-                        <span id="btnText">Pendekkan</span>
-                    </button>
                 </div>
+            </div>
+
+            <!-- Custom Alias -->
+            <div class="alias-row">
+                <span class="alias-prefix" id="domainPrefix">domain.com/</span>
+                <input 
+                    type="text" 
+                    id="customAlias" 
+                    class="alias-input"
+                    placeholder="custom-alias (opsional)"
+                >
+            </div>
+
+            <!-- Submit Button -->
+            <button type="button" id="submitBtn" class="btn btn-primary">
+                <i class="fas fa-scissors"></i>
+                <span id="btnText">Pendekkan Sekarang</span>
+            </button>
+
+            <!-- Loading Spinner -->
+            <div class="loading-spinner hidden" id="loadingSpinner">
+                <div class="spinner"></div>
+                <p class="loading-text">Menyimpan ke database...</p>
             </div>
 
             <!-- Result Section -->
@@ -105,7 +127,7 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p>Dibuat dengan <i class="fas fa-heart"></i> oleh Anda • Cepat, Aman, Gratis</p>
+            <p>Dibuat dengan <i class="fas fa-heart"></i> • Cepat, Aman, Gratis</p>
         </div>
     </div>
 

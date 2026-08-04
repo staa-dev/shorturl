@@ -1,5 +1,6 @@
 /* ============================================
-   SHORTLINK - CLEAN MODERN DESIGN
+   SHORTLINK - GLASSMORPHISM MODERN DESIGN
+   COMPLETE STYLESHEET
    ============================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -73,7 +74,7 @@ body {
     position: absolute;
     border-radius: 50%;
     filter: blur(120px);
-    opacity: 0.5;
+    opacity: 0.4;
     animation: floatGradient 20s ease-in-out infinite;
 }
 
@@ -156,18 +157,18 @@ body {
    ============================================ */
 .header-section {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .logo-wrapper {
     position: relative;
     display: inline-block;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .logo-circle {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     background: linear-gradient(135deg, var(--primary), var(--secondary));
     border-radius: 50%;
     display: flex;
@@ -179,17 +180,17 @@ body {
 }
 
 .logo-circle i {
-    font-size: 2rem;
+    font-size: 1.8rem;
     color: white;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
 
 .logo-ring {
     position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
     border: 2px solid rgba(108, 92, 231, 0.3);
     border-radius: 50%;
     animation: ringRotate 4s linear infinite;
@@ -221,18 +222,18 @@ body {
 }
 
 .app-title {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: 800;
     background: linear-gradient(135deg, #FFFFFF 0%, #B2BEC3 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     letter-spacing: -1px;
 }
 
 .app-subtitle {
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: var(--text-secondary);
     font-weight: 400;
     display: flex;
@@ -243,13 +244,57 @@ body {
 
 .app-subtitle i {
     color: var(--primary-light);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     animation: bounceIcon 2s ease-in-out infinite;
 }
 
 @keyframes bounceIcon {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
+    50% { transform: translateY(-4px); }
+}
+
+/* ============================================
+   CONNECTION STATUS
+   ============================================ */
+.connection-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    backdrop-filter: blur(10px);
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.status-dot.online {
+    background: var(--success);
+    animation: pulse 2s infinite;
+    box-shadow: 0 0 8px rgba(0, 184, 148, 0.5);
+}
+
+.status-dot.offline {
+    background: var(--danger);
+    box-shadow: 0 0 8px rgba(225, 112, 85, 0.5);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
 }
 
 /* ============================================
@@ -261,7 +306,7 @@ body {
     -webkit-backdrop-filter: blur(30px);
     border: 1px solid var(--border-glass);
     border-radius: var(--radius-xl);
-    padding: 40px;
+    padding: 32px;
     box-shadow: var(--shadow-lg);
     transition: var(--transition-smooth);
     position: relative;
@@ -294,7 +339,7 @@ body {
    INPUT SECTION
    ============================================ */
 .input-section {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .input-label {
@@ -303,19 +348,20 @@ body {
     gap: 8px;
     color: var(--text-secondary);
     font-weight: 500;
-    font-size: 0.9rem;
-    margin-bottom: 12px;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
 }
 
 .input-label i {
     color: var(--primary-light);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .input-group {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     position: relative;
+    margin-bottom: 16px;
 }
 
 .input-wrapper {
@@ -325,12 +371,12 @@ body {
 
 .url-input {
     width: 100%;
-    padding: 18px 20px 18px 50px;
+    padding: 14px 16px 14px 44px;
     background: rgba(255, 255, 255, 0.05);
     border: 2px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-md);
     color: var(--text-primary);
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 500;
     transition: var(--transition-smooth);
@@ -340,6 +386,7 @@ body {
 .url-input::placeholder {
     color: var(--text-muted);
     font-weight: 400;
+    font-size: 0.85rem;
 }
 
 .url-input:focus {
@@ -348,19 +395,19 @@ body {
     box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
 }
 
-.url-input:focus ~ .input-icon-left {
-    color: var(--primary);
-}
-
 .input-icon-left {
     position: absolute;
-    left: 18px;
+    left: 16px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-muted);
-    font-size: 1.1rem;
+    font-size: 1rem;
     transition: var(--transition-fast);
     pointer-events: none;
+}
+
+.url-input:focus ~ .input-icon-left {
+    color: var(--primary);
 }
 
 .clear-btn {
@@ -394,13 +441,64 @@ body {
 }
 
 /* ============================================
+   ALIAS ROW
+   ============================================ */
+.alias-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 20px;
+}
+
+.alias-prefix {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 14px 16px;
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-right: none;
+    white-space: nowrap;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.alias-input {
+    flex: 1;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    outline: none;
+    transition: var(--transition-smooth);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    min-width: 0;
+}
+
+.alias-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+}
+
+.alias-input::placeholder {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 400;
+}
+
+/* ============================================
    BUTTONS
    ============================================ */
 .btn {
-    padding: 18px 32px;
+    padding: 16px 28px;
     border: none;
     border-radius: var(--radius-md);
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     font-family: 'Plus Jakarta Sans', sans-serif;
     cursor: pointer;
@@ -414,7 +512,7 @@ body {
 }
 
 .btn i {
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 .btn::after {
@@ -436,9 +534,11 @@ body {
 }
 
 .btn-primary {
+    width: 100%;
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
     box-shadow: 0 4px 20px rgba(108, 92, 231, 0.4);
+    justify-content: center;
 }
 
 .btn-primary:hover {
@@ -462,13 +562,41 @@ body {
 }
 
 /* ============================================
+   LOADING SPINNER
+   ============================================ */
+.loading-spinner {
+    text-align: center;
+    padding: 16px 0;
+}
+
+.spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--primary);
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 12px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-text {
+    font-weight: 500;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* ============================================
    RESULT CARD
    ============================================ */
 .result-card {
-    background: linear-gradient(135deg, rgba(0, 184, 148, 0.1), rgba(0, 206, 201, 0.1));
-    border: 2px solid rgba(0, 184, 148, 0.3);
+    background: linear-gradient(135deg, rgba(0, 184, 148, 0.08), rgba(0, 206, 201, 0.08));
+    border: 2px solid rgba(0, 184, 148, 0.25);
     border-radius: var(--radius-lg);
-    padding: 28px;
+    padding: 24px;
     margin-top: 24px;
     animation: resultSlideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     position: relative;
@@ -482,7 +610,7 @@ body {
     right: -50%;
     width: 200px;
     height: 200px;
-    background: radial-gradient(circle, rgba(0, 184, 148, 0.2), transparent);
+    background: radial-gradient(circle, rgba(0, 184, 148, 0.15), transparent);
     border-radius: 50%;
 }
 
@@ -501,12 +629,12 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .result-icon {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     background: var(--success);
     border-radius: 50%;
     display: flex;
@@ -517,7 +645,7 @@ body {
 
 .result-icon i {
     color: white;
-    font-size: 1.2rem;
+    font-size: 1rem;
 }
 
 @keyframes scaleIn {
@@ -532,12 +660,12 @@ body {
 .result-title {
     color: var(--success);
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.9rem;
 }
 
 .shortlink-display {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 16px;
     background: rgba(0, 0, 0, 0.3);
     border-radius: var(--radius-sm);
@@ -546,11 +674,11 @@ body {
 
 .shortlink-input {
     flex: 1;
-    padding: 14px 16px;
+    padding: 12px 14px;
     background: transparent;
     border: none;
     color: white;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-family: 'Courier New', monospace;
     font-weight: 600;
     letter-spacing: 0.5px;
@@ -564,7 +692,7 @@ body {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
-    padding: 12px 20px;
+    padding: 10px 18px;
     border-radius: var(--radius-sm);
     font-weight: 600;
     cursor: pointer;
@@ -572,7 +700,7 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .btn-copy:hover {
@@ -594,14 +722,14 @@ body {
 
 .result-actions {
     display: flex;
-    gap: 12px;
+    gap: 10px;
 }
 
 .btn-outline {
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
-    padding: 10px 20px;
+    padding: 10px 18px;
     border-radius: var(--radius-sm);
     font-weight: 500;
     cursor: pointer;
@@ -609,8 +737,9 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     text-decoration: none;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .btn-outline:hover {
@@ -623,29 +752,31 @@ body {
    ERROR MESSAGE
    ============================================ */
 .error-card {
-    background: rgba(225, 112, 85, 0.1);
-    border: 2px solid rgba(225, 112, 85, 0.3);
+    background: rgba(225, 112, 85, 0.08);
+    border: 2px solid rgba(225, 112, 85, 0.25);
     border-radius: var(--radius-md);
-    padding: 16px 20px;
+    padding: 14px 18px;
     margin-top: 16px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     color: #FAB1A0;
     animation: shakeError 0.5s ease-out;
+    font-size: 0.85rem;
 }
 
 @keyframes shakeError {
     0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-15px); }
-    40% { transform: translateX(15px); }
-    60% { transform: translateX(-10px); }
-    80% { transform: translateX(10px); }
+    20% { transform: translateX(-12px); }
+    40% { transform: translateX(12px); }
+    60% { transform: translateX(-8px); }
+    80% { transform: translateX(8px); }
 }
 
 .error-icon {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: var(--danger);
+    flex-shrink: 0;
 }
 
 /* ============================================
@@ -658,9 +789,10 @@ body {
     background: var(--bg-secondary);
     border: 1px solid var(--border-glass);
     border-radius: var(--radius-md);
-    padding: 16px 24px;
+    padding: 14px 22px;
     color: white;
     font-weight: 600;
+    font-size: 0.85rem;
     box-shadow: var(--shadow-lg);
     z-index: 1000;
     backdrop-filter: blur(20px);
@@ -710,9 +842,9 @@ body {
    ============================================ */
 .footer {
     text-align: center;
-    margin-top: 24px;
+    margin-top: 20px;
     color: var(--text-muted);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 }
 
 .footer i {
@@ -726,23 +858,6 @@ body {
     30% { transform: scale(1); }
     45% { transform: scale(1.15); }
     60% { transform: scale(1); }
-}
-
-/* ============================================
-   LOADING SPINNER
-   ============================================ */
-.spinner {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    border-top-color: white;
-    animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
 }
 
 /* ============================================
@@ -765,32 +880,46 @@ body {
    RESPONSIVE DESIGN
    ============================================ */
 @media (max-width: 640px) {
+    body {
+        padding: 16px;
+    }
+    
     .main-card {
-        padding: 28px 20px;
+        padding: 24px 20px;
         border-radius: var(--radius-lg);
     }
     
     .app-title {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
     
     .logo-circle {
-        width: 70px;
-        height: 70px;
+        width: 60px;
+        height: 60px;
     }
     
     .logo-circle i {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
     }
     
     .input-group {
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
     }
     
     .btn {
         width: 100%;
         justify-content: center;
+    }
+    
+    .alias-prefix {
+        font-size: 0.7rem;
+        padding: 12px 14px;
+        max-width: 120px;
+    }
+    
+    .alias-input {
+        font-size: 0.85rem;
     }
     
     .shortlink-display {
@@ -813,9 +942,9 @@ body {
     }
     
     .toast {
-        left: 20px;
-        right: 20px;
-        bottom: 20px;
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
     }
     
     .bg-gradient-1 {
@@ -826,5 +955,10 @@ body {
     .bg-gradient-2 {
         width: 250px;
         height: 250px;
+    }
+    
+    .connection-status {
+        font-size: 0.7rem;
+        padding: 6px 12px;
     }
 }

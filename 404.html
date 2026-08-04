@@ -1,25 +1,27 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
-    <script>
-        // Cek apakah ini shortlink
-        const path = window.location.pathname;
-        const match = path.match(/\/s\/([a-zA-Z0-9]+)/);
-        
-        if (match) {
-            // Redirect ke redirect handler dengan parameter
-            const code = match[1];
-            window.location.href = `/redirect.html?code=${code}`;
-        } else {
-            // Jika bukan shortlink, redirect ke home
-            window.location.href = '/';
-        }
-    </script>
 </head>
 <body>
-    <p>Redirecting...</p>
+    <script>
+        // Ambil path dari URL
+        const path = window.location.pathname.replace(/^\//, '').replace(/\/$/, '');
+        
+        // Jika path mengandung /s/CODE
+        const match = path.match(/^s\/([a-zA-Z0-9\-_]+)$/);
+        
+        if (match) {
+            // Redirect ke redirect.html dengan parameter
+            window.location.href = '/redirect.html?code=' + encodeURIComponent(match[1]);
+        } else if (path && path !== 'index.html' && path !== 'redirect.html' && path !== '404.html') {
+            // Jika ada path lain, anggap sebagai short code
+            window.location.href = '/redirect.html?code=' + encodeURIComponent(path);
+        } else {
+            // Jika tidak ada path, ke halaman utama
+            window.location.href = '/index.html';
+        }
+    </script>
 </body>
 </html>

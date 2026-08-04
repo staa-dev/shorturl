@@ -1,18 +1,19 @@
 // ============================================
-// SHORTLINK APP - CLEAN JAVASCRIPT
+// SHORTLINK APP - FETCH API VERSION
 // ============================================
 
 // Konfigurasi Supabase - GANTI DENGAN KREDENSIAL ANDA
 const SUPABASE_URL = 'https://wbibstumuvqytzlrqvoj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaWJzdHVtdXZxeXR6bHJxdm9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MDk5OTUsImV4cCI6MjEwMTM4NTk5NX0.TWQO4vS1tvHdve7dfrvZsrM34qiiQC_zO8B81bS-pKk';
-
-let supabaseClient;
+const SUPABASE_TABLE = 'shortlinks';
+const CLEAN_DOMAIN = window.location.origin;
 
 // ============================================
 // DOM ELEMENTS
 // ============================================
 const elements = {
     urlInput: document.getElementById('urlInput'),
+    customAlias: document.getElementById('customAlias'),
     submitBtn: document.getElementById('submitBtn'),
     btnText: document.getElementById('btnText'),
     clearBtn: document.getElementById('clearBtn'),
@@ -24,8 +25,60 @@ const elements = {
     error: document.getElementById('error'),
     errorMessage: document.getElementById('errorMessage'),
     toast: document.getElementById('toast'),
-    toastMessage: document.getElementById('toastMessage')
+    toastMessage: document.getElementById('toastMessage'),
+    loadingSpinner: document.getElementById('loadingSpinner'),
+    domainPrefix: document.getElementById('domainPrefix'),
+    statusDot: document.getElementById('statusDot'),
+    statusText: document.getElementById('statusText'),
+    connectionStatus: document.getElementById('connectionStatus')
 };
+
+// ============================================
+// SUPABASE FETCH API FUNCTIONS
+// ============================================
+async function supabaseQuery(shortCode) {
+    const url = `${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?short_code=eq.${encodeURIComponent(shortCode)}&select=*`;
+    const response = await fetch(url, {
+        headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        }
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+}
+
+async function supabaseInsert(shortCode, originalUrl) {
+    const url = `${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`;
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+            short_code: shortCode,
+            original_url: originalUrl,
+            clicks: 0
+        })
+    });
+    return response.ok;
+}
+
+async function supabaseUpdateClicks(shortCode, clicks) {
+    const url = `${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?short_code=eq.${encodeURIComponent(shortCode)}`;
+    await fetch(url, {
+        method: 'PATCH',
+        headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ clicks: clicks })
+    });
+}
 
 // ============================================
 // INITIALIZATION
@@ -33,8 +86,11 @@ const elements = {
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 ShortLink App Ready');
     
-    // Initialize Supabase
-    await initSupabase();
+    // Setup domain prefix
+    elements.domainPrefix.textContent = CLEAN_DOMAIN + '/s/';
+    
+    // Check database connection
+    await checkConnection();
     
     // Setup event listeners
     setupEventListeners();
@@ -43,28 +99,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     elements.urlInput.focus();
 });
 
-async function initSupabase() {
+async function checkConnection() {
     try {
-        if (typeof window.supabase !== 'undefined') {
-            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            
-            // Test connection
-            const { error } = await supabaseClient
-                .from('shortlinks')
-                .select('count', { count: 'exact', head: true });
-            
-            if (error) {
-                console.error('❌ Database connection failed:', error);
-                showError('Gagal terhubung ke database');
-            } else {
-                console.log('✅ Database connected');
+        // Test query
+        const testUrl = `${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?select=count`;
+        const response = await fetch(testUrl, {
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
             }
+        });
+        
+        if (response.ok) {
+            elements.statusDot.className = 'status-dot online';
+            elements.statusText.textContent = '✅ Database Terhubung';
         } else {
-            throw new Error('Supabase library not loaded');
+            throw new Error('Connection failed');
         }
     } catch (error) {
-        console.error('❌ Initialization error:', error);
-        showError('Gagal menginisialisasi aplikasi');
+        console.error('❌ Database connection failed:', error);
+        elements.statusDot.className = 'status-dot offline';
+        elements.statusText.textContent = '⚠️ Database Offline';
     }
 }
 
@@ -75,8 +130,16 @@ function setupEventListeners() {
     // Submit button
     elements.submitBtn.addEventListener('click', createShortlink);
     
-    // Enter key
+    // Enter key on URL input
     elements.urlInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            createShortlink();
+        }
+    });
+    
+    // Enter key on alias input
+    elements.customAlias.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             createShortlink();
@@ -114,6 +177,7 @@ function resetForm() {
     hideElement(elements.result);
     hideElement(elements.error);
     elements.urlInput.value = '';
+    elements.customAlias.value = '';
     elements.clearBtn.classList.remove('visible');
     elements.urlInput.focus();
     
@@ -124,7 +188,7 @@ function resetForm() {
 // ============================================
 // SHORTLINK CREATION
 // ============================================
-function generateShortCode(length = 6) {
+function generateShortCode(length = 5) {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     const array = new Uint32Array(length);
     crypto.getRandomValues(array);
@@ -141,6 +205,7 @@ async function createShortlink() {
     hideElement(elements.error);
     
     let url = elements.urlInput.value.trim();
+    const customAlias = elements.customAlias.value.trim();
     
     // Validation
     if (!url) {
@@ -164,38 +229,53 @@ async function createShortlink() {
         return;
     }
     
+    // Validate custom alias
+    if (customAlias && customAlias.length < 3) {
+        showError('Custom alias minimal 3 karakter');
+        return;
+    }
+    
+    if (customAlias && !/^[a-zA-Z0-9\-_]+$/.test(customAlias)) {
+        showError('Alias hanya boleh huruf, angka, dash (-) dan underscore (_)');
+        return;
+    }
+    
     // Loading state
     setLoading(true);
     
     try {
-        if (!supabaseClient) {
-            throw new Error('Database tidak terhubung. Silakan refresh halaman.');
+        let shortCode;
+        
+        if (customAlias) {
+            // Check if custom alias already exists
+            const existing = await supabaseQuery(customAlias);
+            if (existing && existing.length > 0) {
+                showError('Alias sudah digunakan. Silakan pilih alias lain.');
+                setLoading(false);
+                return;
+            }
+            shortCode = customAlias;
+        } else {
+            // Generate unique short code
+            let isUnique = false;
+            do {
+                shortCode = generateShortCode();
+                const existing = await supabaseQuery(shortCode);
+                if (!existing || existing.length === 0) {
+                    isUnique = true;
+                }
+            } while (!isUnique);
         }
         
-        const shortCode = generateShortCode();
-        
         // Insert to database
-        const { data, error } = await supabaseClient
-            .from('shortlinks')
-            .insert([{
-                short_code: shortCode,
-                original_url: url,
-                clicks: 0
-            }])
-            .select()
-            .single();
+        const saved = await supabaseInsert(shortCode, url);
         
-        if (error) {
-            if (error.code === '23505') {
-                // Duplicate code, retry with new code
-                return await createShortlink();
-            }
-            throw error;
+        if (!saved) {
+            throw new Error('Gagal menyimpan ke database');
         }
         
         // Success!
- // Di bagian createShortlink function, setelah sukses insert:
-const shortUrl = `${window.location.origin}/s/${shortCode}`;
+        const shortUrl = `${CLEAN_DOMAIN}/s/${shortCode}`;
         
         // Update UI
         elements.shortUrl.value = shortUrl;
@@ -216,8 +296,9 @@ const shortUrl = `${window.location.origin}/s/${shortCode}`;
         // Show success toast
         showToast('✅ Link pendek berhasil dibuat!', 'success');
         
-        // Clear input
+        // Clear inputs
         elements.urlInput.value = '';
+        elements.customAlias.value = '';
         toggleClearButton();
         
     } catch (error) {
@@ -242,7 +323,7 @@ async function copyToClipboard() {
         copyBtn.innerHTML = '<i class="fas fa-check"></i> <span>Tersalin!</span>';
         
         // Show toast
-        showToast('📋 Link berhasil disalin ke clipboard!', 'success');
+        showToast('📋 Link berhasil disalin!', 'success');
         
         // Reset button after 2 seconds
         setTimeout(() => {
@@ -264,10 +345,12 @@ async function copyToClipboard() {
 // ============================================
 function setLoading(isLoading) {
     elements.submitBtn.disabled = isLoading;
+    elements.loadingSpinner.classList.toggle('hidden', !isLoading);
+    
     if (isLoading) {
-        elements.btnText.innerHTML = '<span class="spinner"></span> Memproses...';
+        elements.btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
     } else {
-        elements.btnText.innerHTML = '<i class="fas fa-scissors"></i> Pendekkan';
+        elements.btnText.innerHTML = '<i class="fas fa-scissors"></i> Pendekkan Sekarang';
     }
 }
 
@@ -323,7 +406,7 @@ function hideElement(element) {
 function shakeElement(element) {
     if (!element) return;
     element.style.animation = 'none';
-    element.offsetHeight; // Trigger reflow
+    element.offsetHeight;
     element.style.animation = 'shakeError 0.5s ease-out';
     setTimeout(() => {
         element.style.animation = '';

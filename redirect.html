@@ -4,13 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -19,53 +15,13 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            overflow: hidden;
-        }
-        
-        .background-gradient {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
-        
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.3;
-            animation: float 20s ease-in-out infinite;
-        }
-        
-        .orb-1 {
-            width: 400px;
-            height: 400px;
-            background: #6C5CE7;
-            top: -100px;
-            right: -100px;
-        }
-        
-        .orb-2 {
-            width: 300px;
-            height: 300px;
-            background: #00CEC9;
-            bottom: -50px;
-            left: -50px;
-            animation-delay: -10s;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(30px, -30px); }
         }
         
         .container {
             text-align: center;
+            padding: 40px;
             position: relative;
             z-index: 1;
-            padding: 20px;
         }
         
         .loader {
@@ -130,7 +86,6 @@
             padding: 40px;
             margin-top: 20px;
             display: none;
-            backdrop-filter: blur(10px);
         }
         
         .error-box.show {
@@ -143,16 +98,11 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        .error-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-        }
-        
         .error-title {
             color: #E17055;
             font-size: 1.5rem;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin: 20px 0 12px;
         }
         
         .error-text {
@@ -169,215 +119,127 @@
             text-decoration: none;
             border-radius: 14px;
             font-weight: 600;
-            font-size: 1rem;
             transition: all 0.3s;
-            border: none;
-            cursor: pointer;
         }
         
         .home-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 30px rgba(108, 92, 231, 0.4);
         }
-        
-        .debug-info {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-            color: #636E72;
-            font-size: 0.85rem;
-            display: none;
-        }
     </style>
 </head>
 <body>
-    <div class="background-gradient">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-    </div>
-    
     <div class="container">
-        <!-- Loading State -->
         <div id="loadingState">
             <div class="loader">
                 <div class="loader-ring"></div>
                 <div class="loader-ring"></div>
                 <div class="loader-ring"></div>
             </div>
-            <h1 class="title">ShortLink</h1>
-            <p class="status" id="loadingStatus">Mendeteksi link...</p>
+            <h1 class="title">Mengarahkan</h1>
+            <p class="status" id="loadingStatus">Mencari link tujuan...</p>
         </div>
         
-        <!-- Error State -->
         <div class="error-box" id="errorState">
-            <div class="error-icon">🔗</div>
+            <div style="font-size:4rem;">🔗</div>
             <h2 class="error-title">Link Tidak Ditemukan</h2>
-            <p class="error-text" id="errorDetail">Kode shortlink tidak ditemukan</p>
+            <p class="error-text" id="errorDetail">Shortlink tidak valid atau sudah kadaluarsa</p>
             <a href="/" class="home-btn">🏠 Kembali ke Beranda</a>
-            <div class="debug-info" id="debugInfo"></div>
         </div>
     </div>
 
     <script>
         // ============================================
-        // KONFIGURASI - GANTI DENGAN KREDENSIAL ANDA
+        // KONFIGURASI SUPABASE - GANTI DENGAN KREDENSIAL ANDA
         // ============================================
         const SUPABASE_URL = 'https://xxxxxxxxxxxx.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+        const SUPABASE_TABLE = 'shortlinks';
         
         async function redirect() {
             const loadingStatus = document.getElementById('loadingStatus');
             
-            // ============================================
-            // DETEKSI SHORT CODE DARI BERBAGAI SUMBER
-            // ============================================
-            let shortCode = null;
-            
-            // 1. Cek dari query parameter ?code=
+            // Get short code from URL parameter
             const urlParams = new URLSearchParams(window.location.search);
-            shortCode = urlParams.get('code');
+            let shortCode = urlParams.get('code');
             
-            // 2. Jika tidak ada, cek dari URL path /s/CODE
+            // If no code in query, try to get from path
             if (!shortCode) {
                 const path = window.location.pathname;
-                const match = path.match(/\/s\/([a-zA-Z0-9]+)/);
+                const match = path.match(/\/s\/([a-zA-Z0-9\-_]+)/);
                 if (match) {
                     shortCode = match[1];
                 }
             }
             
-            // 3. Jika masih tidak ada, coba ambil dari path langsung
+            console.log('🔍 Short code:', shortCode);
+            
             if (!shortCode) {
-                const pathParts = window.location.pathname.split('/').filter(p => p);
-                if (pathParts.length > 0) {
-                    // Ambil bagian terakhir dari path
-                    const lastPart = pathParts[pathParts.length - 1];
-                    // Pastikan bukan halaman statis
-                    if (!['index.html', 'redirect.html', '404.html'].includes(lastPart)) {
-                        shortCode = lastPart;
-                    }
-                }
-            }
-            
-            // 4. Cek dari referrer (jika ada)
-            if (!shortCode && document.referrer) {
-                try {
-                    const refUrl = new URL(document.referrer);
-                    const refMatch = refUrl.pathname.match(/\/s\/([a-zA-Z0-9]+)/);
-                    if (refMatch) {
-                        shortCode = refMatch[1];
-                    }
-                } catch (e) {}
-            }
-            
-            // Debug info
-            console.log('🔍 Debug Info:');
-            console.log('- Full URL:', window.location.href);
-            console.log('- Pathname:', window.location.pathname);
-            console.log('- Search:', window.location.search);
-            console.log('- Detected code:', shortCode);
-            
-            // Tampilkan debug info di halaman (hilangkan di production)
-            const debugInfo = document.getElementById('debugInfo');
-            if (debugInfo) {
-                debugInfo.style.display = 'block';
-                debugInfo.innerHTML = `
-                    <strong>Debug:</strong><br>
-                    URL: ${window.location.href}<br>
-                    Path: ${window.location.pathname}<br>
-                    Code: ${shortCode || 'TIDAK TERDETEKSI'}
-                `;
-            }
-            
-            // Jika tidak ada short code
-            if (!shortCode) {
-                showError('Kode shortlink tidak terdeteksi. Pastikan URL benar.');
+                showError('Kode shortlink tidak ditemukan');
                 return;
             }
-            
-            // Bersihkan short code
-            shortCode = shortCode.trim();
-            
-            // Validasi format (hanya alfanumerik)
-            if (!/^[a-zA-Z0-9]+$/.test(shortCode)) {
-                showError('Format kode shortlink tidak valid');
-                return;
-            }
-            
-            console.log('✅ Short code valid:', shortCode);
             
             try {
-                // Initialize Supabase
-                if (typeof window.supabase === 'undefined') {
-                    throw new Error('Library Supabase tidak termuat');
-                }
+                loadingStatus.textContent = 'Mencari di database...';
                 
-                const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                
-                loadingStatus.textContent = 'Mencari link di database...';
-                
-                // Query database
-                const { data, error } = await supabase
-                    .from('shortlinks')
-                    .select('original_url, clicks')
-                    .eq('short_code', shortCode)
-                    .single();
-                
-                if (error) {
-                    console.error('❌ Database error:', error);
-                    
-                    if (error.code === 'PGRST116') {
-                        showError(`Link dengan kode "${shortCode}" tidak ditemukan`);
-                    } else {
-                        showError('Gagal mengakses database: ' + error.message);
+                // Query Supabase using Fetch API
+                const url = `${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?short_code=eq.${encodeURIComponent(shortCode)}&select=*`;
+                const response = await fetch(url, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
                     }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Database error');
+                }
+                
+                const data = await response.json();
+                
+                if (!data || data.length === 0) {
+                    showError(`Link dengan kode "${shortCode}" tidak ditemukan`);
                     return;
                 }
                 
-                if (!data || !data.original_url) {
-                    showError('Link tujuan tidak ditemukan');
-                    return;
-                }
+                const linkData = data[0];
+                console.log('✅ Link found:', linkData.original_url);
                 
-                console.log('✅ Link found:', data.original_url);
                 loadingStatus.textContent = 'Mengarahkan ke tujuan...';
                 
-                // Update click count (fire and forget)
-                updateClickCount(supabase, shortCode, data.clicks);
+                // Update click count
+                updateClicks(shortCode, linkData.clicks || 0);
                 
-                // Redirect ke URL asli
+                // Redirect
                 setTimeout(() => {
-                    console.log('🚀 Redirecting to:', data.original_url);
-                    window.location.href = data.original_url;
-                }, 600);
+                    window.location.href = linkData.original_url;
+                }, 500);
                 
             } catch (error) {
-                console.error('❌ System error:', error);
-                showError('Terjadi kesalahan sistem: ' + error.message);
+                console.error('❌ Error:', error);
+                showError('Gagal mengakses database: ' + error.message);
             }
         }
         
-        async function updateClickCount(supabase, shortCode, currentClicks) {
+        async function updateClicks(shortCode, currentClicks) {
             try {
-                const { error } = await supabase
-                    .from('shortlinks')
-                    .update({ clicks: (currentClicks || 0) + 1 })
-                    .eq('short_code', shortCode);
-                
-                if (error) {
-                    console.warn('⚠️ Click update warning:', error);
-                } else {
-                    console.log('✅ Click count updated');
-                }
+                const url = `${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?short_code=eq.${encodeURIComponent(shortCode)}`;
+                await fetch(url, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ clicks: (currentClicks || 0) + 1 })
+                });
+                console.log('✅ Click updated');
             } catch (error) {
-                console.warn('⚠️ Click update error:', error);
+                console.warn('⚠️ Click update failed:', error);
             }
         }
         
         function showError(message) {
-            console.error('❌', message);
-            
             document.getElementById('loadingState').style.display = 'none';
             const errorState = document.getElementById('errorState');
             errorState.classList.add('show');
@@ -385,10 +247,7 @@
         }
         
         // Start redirect
-        window.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 Redirect handler started');
-            redirect();
-        });
+        window.addEventListener('DOMContentLoaded', redirect);
     </script>
 </body>
 </html>
