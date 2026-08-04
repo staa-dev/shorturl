@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>STAA.DEV | Short URL Bento</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --orange: #E37F06;
+      --orange-hover: #c56e04;
+      --orange-light: #fef3e6;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --white: #ffffff;
+      --black: #0a0a0a;
+      
+      --bg-primary: var(--white);
+      --bg-secondary: var(--gray-50);
+      --bg-card: var(--white);
+      --text-primary: var(--gray-900);
+      --text-secondary: var(--gray-600);
+      --text-muted: #6b7280;
+      --border-color: var(--gray-200);
+      --shadow-bento: 0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.03);
+      --radius-bento: 24px;
+      --radius-card: 18px;
+      --transition: all 0.2s ease;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0f0f14;
+      --bg-secondary: #1a1a24;
+      --bg-card: #1e1e2a;
+      --text-primary: #f1f5f9;
+      --text-secondary: #a0aec0;
+      --text-muted: #64748b;
+      --border-color: #2d2d3a;
+      --shadow-bento: 0 8px 16px -4px rgba(0,0,0,0.4);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg-secondary);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* Main Container */
+    .main-container {
+      max-width: 880px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Bento Grid */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .bento-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-card);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-bento);
+      transition: var(--transition);
+    }
+
+    .bento-card:hover {
+      box-shadow: 0 12px 24px -8px rgba(0,0,0,0.08);
+      border-color: var(--orange);
+    }
+
+    .card-header { grid-column: span 4; display: flex; align-items: center; justify-content: space-between; }
+    .card-status { grid-column: span 4; }
+    .card-hero { 
+      grid-column: span 4; 
+      background: linear-gradient(135deg, #1f2937 0%, #111827 100%); 
+      color: white; 
+      border: none; 
+    }
+    .card-create { grid-column: span 3; }
+    .card-stats { grid-column: span 1; }
+    .card-footer { 
+      grid-column: span 4; 
+      background: transparent; 
+      border: none; 
+      box-shadow: none; 
+      padding: 0.5rem 0; 
+      text-align: center; 
+    }
+
+    [data-theme="dark"] .card-hero {
+      background: linear-gradient(135deg, #2d2d3a 0%, #1a1a24 100%);
+      border: 1px solid var(--border-color);
+    }
+
+    /* Brand */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      background: var(--orange);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .brand-name {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-name span {
+      color: var(--orange);
+    }
+
+    /* Theme Toggle */
+    .theme-toggle-btn {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-primary);
+      font-size: 1.1rem;
+      transition: var(--transition);
+    }
+
+    .theme-toggle-btn:hover {
+      background: var(--orange);
+      color: white;
+      border-color: var(--orange);
+    }
+
+    /* Status */
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      flex-wrap: wrap;
+    }
+
+    .status-info {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ef4444;
+      flex-shrink: 0;
+    }
+
+    .status-dot.online {
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    .retry-btn {
+      background: var(--orange);
+      color: white;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.7rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .retry-btn:hover {
+      background: var(--orange-hover);
+    }
+
+    .error-hint {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      padding: 0.6rem 0.8rem;
+      margin-top: 0.5rem;
+      font-size: 0.7rem;
+      color: #991b1b;
+      display: none;
+    }
+
+    .error-hint.show {
+      display: block;
+    }
+
+    /* Hero */
+    .hero-title {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.3rem;
+    }
+
+    .hero-sub {
+      opacity: 0.8;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .domain-badge {
+      background: rgba(255,255,255,0.15);
+      padding: 0.4rem 1rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-block;
+      backdrop-filter: blur(4px);
+    }
+
+    /* Section Title */
+    .section-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-title i {
+      color: var(--orange);
+      font-size: 1rem;
+    }
+
+    /* Input */
+    .input-modern {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      outline: none;
+      transition: var(--transition);
+      margin-bottom: 0.8rem;
+    }
+
+    .input-modern:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(227,127,6,0.15);
+    }
+
+    .alias-wrapper {
+      display: flex;
+      align-items: center;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    .alias-prefix {
+      background: var(--bg-primary);
+      padding: 0.8rem 0.9rem;
+      font-weight: 600;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-right: 1px solid var(--border-color);
+      white-space: nowrap;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .alias-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 0.8rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      outline: none;
+      min-width: 0;
+    }
+
+    /* Button */
+    .btn-primary {
+      background: var(--orange);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: var(--transition);
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      background: var(--orange-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px -6px rgba(227,127,6,0.3);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    /* Result Box */
+    .result-box {
+      background: var(--orange-light);
+      border-radius: 14px;
+      padding: 0.9rem;
+      margin-top: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid var(--orange);
+    }
+
+    [data-theme="dark"] .result-box {
+      background: rgba(227,127,6,0.1);
+    }
+
+    .short-url {
+      font-weight: 700;
+      color: var(--orange);
+      word-break: break-all;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    /* Stats Card */
+    .stats-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-icon {
+      font-size: 1.5rem;
+      color: var(--orange);
+      margin-bottom: 0.3rem;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--orange);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      margin-top: 0.2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Footer */
+    .footer-text {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--bg-card);
+      border: 2px solid var(--orange);
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      z-index: 1000;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transform: translateX(120%);
+      transition: transform 0.3s ease;
+      max-width: 90vw;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    /* ========== REDIRECT PAGE ========== */
+    .redirect-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-secondary);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .redirect-overlay.show {
+      display: flex;
+    }
+
+    .redirect-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-bento);
+      padding: 2.5rem 2rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 480px;
+      width: 90%;
+      animation: slideUp 0.5s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .redirect-icon-wrapper {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--orange) 0%, #ff6b35 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2rem;
+      color: white;
+      animation: pulse 2s infinite;
+      box-shadow: 0 8px 24px rgba(227,127,6,0.3);
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    .redirect-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .redirect-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .redirect-url-display {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      word-break: break-all;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+    }
+
+    .countdown-wrapper {
+      margin-bottom: 1.5rem;
+    }
+
+    .countdown-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      border: 3px solid var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.5rem;
+      position: relative;
+    }
+
+    .countdown-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--orange);
+    }
+
+    .countdown-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--bg-secondary);
+      border-radius: 50px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--orange), #ff6b35);
+      border-radius: 50px;
+      transition: width 1s linear;
+      width: 100%;
+    }
+
+    .redirect-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .btn-redirect {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: var(--transition);
+      border: none;
+    }
+
+    .btn-go {
+      background: var(--orange);
+      color: white;
+    }
+
+    .btn-go:hover {
+      background: var(--orange-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px -6px rgba(227,127,6,0.3);
+    }
+
+    .btn-cancel {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-cancel:hover {
+      background: var(--gray-200);
+      transform: translateY(-2px);
+    }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      .bento-grid {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+      }
+      .card-create, .card-stats {
+        grid-column: span 4;
+      }
+      body {
+        padding: 0.75rem;
+      }
+      .redirect-card {
+        padding: 2rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Main Content -->
+  <div class="main-container" id="mainContent">
+    <div class="bento-grid">
+      <!-- Header -->
+      <div class="bento-card card-header">
+        <div class="brand">
+          <div class="brand-logo"><i class="fas fa-link"></i></div>
+          <span class="brand-name">STAA<span>.</span>URL</span>
+        </div>
+        <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+
+      <!-- Status -->
+      <div class="bento-card card-status">
+        <div class="status-row">
+          <div class="status-info">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Menghubungkan ke Supabase...</span>
+          </div>
+          <div>
+            <button class="retry-btn" onclick="retryConnection()">
+              <i class="fas fa-sync-alt"></i> Coba Lagi
+            </button>
+            <button class="retry-btn" onclick="showSetupGuide()" style="background:#374151; margin-left:0.3rem;">
+              <i class="fas fa-circle-info"></i> Setup
+            </button>
+          </div>
+        </div>
+        <div class="error-hint" id="errorHint">
+          <strong>⚠️ HTTP 404:</strong> Tabel 'links' belum dibuat di Supabase.<br>
+          Buka <strong>SQL Editor</strong> di dashboard Supabase dan jalankan query CREATE TABLE.
+        </div>
+      </div>
+
+      <!-- Hero -->
+      <div class="bento-card card-hero">
+        <div class="hero-title"><i class="fas fa-bolt" style="color:var(--orange); margin-right:0.3rem;"></i> Potong Tautan</div>
+        <div class="hero-sub">Desain Bento Grid · Orange & Monokrom</div>
+        <div class="domain-badge"><i class="fas fa-globe"></i> ishortener.netlify.app</div>
+      </div>
+
+      <!-- Create -->
+      <div class="bento-card card-create">
+        <div class="section-title"><i class="fas fa-scissors"></i> Buat Short URL Baru</div>
+        <input type="text" class="input-modern" id="longUrl" placeholder="Tempel URL panjang di sini...">
+        <div class="alias-wrapper">
+          <span class="alias-prefix">ishortener.netlify.app/</span>
+          <input type="text" class="alias-input" id="customAlias" placeholder="custom-alias (opsional)">
+        </div>
+        <button class="btn-primary" id="shortenBtn" onclick="shortenURL()">
+          <i class="fas fa-wand-magic-sparkles"></i> Pendekkan Sekarang
+        </button>
+        <div id="resultArea" style="display: none;">
+          <div class="result-box">
+            <span class="short-url" id="resultShort" onclick="copyShortURL()">-</span>
+            <i class="fas fa-copy" style="cursor:pointer; color:var(--orange); font-size:1.1rem;" onclick="copyShortURL()" title="Salin"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="bento-card card-stats">
+        <div class="section-title"><i class="fas fa-chart-simple"></i> Statistik</div>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-icon"><i class="fas fa-link"></i></div>
+            <div class="stat-value" id="totalLinks">0</div>
+            <div class="stat-label">Total Link</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
+            <div class="stat-value" id="todayLinks">0</div>
+            <div class="stat-label">Hari Ini</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-icon"><i class="fas fa-mouse-pointer"></i></div>
+            <div class="stat-value" id="totalClicks">0</div>
+            <div class="stat-label">Total Klik</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="card-footer">
+        <div class="footer-text">© 2026 STAA.DEV · Powered by <i class="fas fa-database"></i> Supabase · ishortener.netlify.app</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Redirect Overlay -->
+  <div class="redirect-overlay" id="redirectOverlay">
+    <div class="redirect-card">
+      <div class="redirect-icon-wrapper">
+        <i class="fas fa-rocket"></i>
+      </div>
+      <div class="redirect-title">Mengalihkan Anda...</div>
+      <div class="redirect-subtitle">Mohon tunggu sebentar</div>
+      <div class="redirect-url-display" id="redirectUrlDisplay">-</div>
+      
+      <div class="countdown-wrapper">
+        <div class="countdown-circle">
+          <span class="countdown-number" id="countdownNumber">10</span>
+        </div>
+        <div class="countdown-label">detik</div>
+      </div>
+      
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      
+      <div class="redirect-buttons">
+        <button class="btn-redirect btn-go" onclick="goNow()">
+          <i class="fas fa-bolt"></i> Buka Sekarang
+        </button>
+        <button class="btn-redirect btn-cancel" onclick="cancelRedirect()">
+          <i class="fas fa-times"></i> Batal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ==================== KONFIGURASI SUPABASE ====================
+    const SUPABASE_URL = 'https://wbibstumuvqytzlrqvoj.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaWJzdHVtdXZxeXR6bHJxdm9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MDk5OTUsImV4cCI6MjEwMTM4NTk5NX0.TWQO4vS1tvHdve7dfrvZsrM34qiiQC_zO8B81bS-pKk';
+    const TABLE_NAME = 'links';
+    const CLEAN_DOMAIN = 'https://ishortener.netlify.app';
+
+    // ==================== REDIRECT STATE ====================
+    let redirectTimer = null;
+    let targetUrl = '';
+
+    // ==================== FUNGSI SUPABASE ====================
+    async function supabaseFetchAll() {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}?select=*&order=created_at.desc`, {
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        }
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 100)}`);
+      }
+      
+      const rows = await response.json();
+      const records = {};
+      if (Array.isArray(rows)) {
+        rows.forEach(row => {
+          records[row.short_code] = {
+            url: row.url,
+            created_at: row.created_at,
+            clicks: row.clicks || 0
+          };
+        });
+      }
+      return records;
+    }
+
+    async function supabaseInsert(shortCode, urlData) {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          short_code: shortCode,
+          url: urlData.url,
+          created_at: urlData.created_at || new Date().toISOString(),
+          clicks: urlData.clicks || 0
+        })
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 100)}`);
+      }
+      
+      return true;
+    }
+
+    async function supabaseUpdateClicks(shortCode, clicks) {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}?short_code=eq.${encodeURIComponent(shortCode)}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ clicks: clicks })
+      });
+      
+      return response.ok;
+    }
+
+    // ==================== STATE ====================
+    let linkDataCache = {};
+    let isOnline = false;
+    let lastError = null;
+
+    // ==================== UI HELPERS ====================
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.borderColor = type === 'error' ? '#ef4444' : 'var(--orange)';
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    function updateConnectionStatus(online, errorMessage = '') {
+      isOnline = online;
+      const dot = document.getElementById('statusDot');
+      const text = document.getElementById('statusText');
+      const errorHint = document.getElementById('errorHint');
+      
+      if (online) {
+        dot.className = 'status-dot online';
+        text.textContent = '✅ Terhubung ke Supabase';
+        errorHint.classList.remove('show');
+      } else {
+        dot.className = 'status-dot';
+        text.textContent = '⚠️ Offline (Menggunakan LocalStorage)';
+        if (errorMessage) {
+          errorHint.innerHTML = `<strong>⚠️ Error:</strong> ${errorMessage}<br>
+          <small>Buka <strong>SQL Editor</strong> di dashboard Supabase dan jalankan query CREATE TABLE.</small>`;
+          errorHint.classList.add('show');
+          lastError = errorMessage;
+        }
+      }
+    }
+
+    window.showSetupGuide = function() {
+      const guide = `
+📋 SETUP SUPABASE:
+1. Buka dashboard Supabase
+2. Pilih project Anda
+3. Buka SQL Editor
+4. Copy & jalankan query ini:
+
+CREATE TABLE links (
+  short_code TEXT PRIMARY KEY,
+  url TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  clicks BIGINT DEFAULT 0
+);
+
+ALTER TABLE links ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow all" ON links
+  FOR ALL USING (true);
+
+5. Klik "Run"
+6. Refresh halaman ini
+
+Error saat ini: ${lastError || 'HTTP 404'}
+      `;
+      alert(guide);
+    };
+
+    function generateShortCode(length = 5) {
+      const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    }
+
+    function updateStats() {
+      const entries = Object.entries(linkDataCache);
+      document.getElementById('totalLinks').textContent = entries.length;
+      
+      const today = new Date().toDateString();
+      const todayCount = entries.filter(([, data]) => {
+        return new Date(data.created_at).toDateString() === today;
+      }).length;
+      document.getElementById('todayLinks').textContent = todayCount;
+      
+      const totalClicks = entries.reduce((sum, [, data]) => sum + (data.clicks || 0), 0);
+      document.getElementById('totalClicks').textContent = totalClicks;
+    }
+
+    // ==================== REDIRECT FUNCTIONS ====================
+    function showRedirectOverlay(url) {
+      targetUrl = url;
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('redirectOverlay').classList.add('show');
+      document.getElementById('redirectUrlDisplay').textContent = url;
+      document.getElementById('progressFill').style.width = '100%';
+      
+      let countdown = 10;
+      document.getElementById('countdownNumber').textContent = countdown;
+      
+      redirectTimer = setInterval(() => {
+        countdown--;
+        document.getElementById('countdownNumber').textContent = countdown;
+        document.getElementById('progressFill').style.width = (countdown * 10) + '%';
+        
+        if (countdown <= 0) {
+          clearInterval(redirectTimer);
+          window.location.href = targetUrl;
+        }
+      }, 1000);
+    }
+
+    window.cancelRedirect = function() {
+      if (redirectTimer) {
+        clearInterval(redirectTimer);
+        redirectTimer = null;
+      }
+      document.getElementById('mainContent').style.display = '';
+      document.getElementById('redirectOverlay').classList.remove('show');
+      targetUrl = '';
+    };
+
+    window.goNow = function() {
+      if (redirectTimer) {
+        clearInterval(redirectTimer);
+        redirectTimer = null;
+      }
+      if (targetUrl) {
+        window.location.href = targetUrl;
+      }
+    };
+
+    // ==================== AKSI ====================
+    window.copyToClipboard = function(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('📋 URL berhasil disalin!');
+      }).catch(() => {
+        showToast('Gagal menyalin URL', 'error');
+      });
+    };
+
+    window.copyShortURL = function() {
+      const shortURL = document.getElementById('resultShort').textContent;
+      if (shortURL && shortURL !== '-') {
+        copyToClipboard(shortURL);
+      }
+    };
+
+    window.shortenURL = async function() {
+      const longUrl = document.getElementById('longUrl').value.trim();
+      const customAlias = document.getElementById('customAlias').value.trim();
+      const btn = document.getElementById('shortenBtn');
+      const resultArea = document.getElementById('resultArea');
+      
+      if (!longUrl) {
+        showToast('❌ Masukkan URL terlebih dahulu', 'error');
+        return;
+      }
+      
+      if (!longUrl.startsWith('http://') && !longUrl.startsWith('https://')) {
+        showToast('❌ URL harus diawali http:// atau https://', 'error');
+        return;
+      }
+      
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+      
+      try {
+        let shortCode;
+        
+        if (customAlias && customAlias.length >= 2) {
+          if (!/^[a-zA-Z0-9\-_]+$/.test(customAlias)) {
+            showToast('❌ Alias hanya boleh huruf, angka, dash, dan underscore', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Pendekkan Sekarang';
+            return;
+          }
+          
+          if (linkDataCache[customAlias]) {
+            showToast('⚠️ Alias sudah digunakan, pilih yang lain', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Pendekkan Sekarang';
+            return;
+          }
+          
+          shortCode = customAlias;
+        } else {
+          do {
+            shortCode = generateShortCode();
+          } while (linkDataCache[shortCode]);
+        }
+        
+        const urlData = {
+          url: longUrl,
+          created_at: new Date().toISOString(),
+          clicks: 0
+        };
+        
+        // Simpan ke localStorage dulu
+        linkDataCache[shortCode] = urlData;
+        localStorage.setItem('staa_bento_links', JSON.stringify(linkDataCache));
+        
+        // Coba simpan ke Supabase
+        let savedToSupabase = false;
+        if (isOnline) {
+          try {
+            savedToSupabase = await supabaseInsert(shortCode, urlData);
+          } catch (e) {
+            console.warn('Gagal menyimpan ke Supabase:', e.message);
+          }
+        }
+        
+        const shortURL = `${CLEAN_DOMAIN}/${shortCode}`;
+        document.getElementById('resultShort').textContent = shortURL;
+        resultArea.style.display = 'block';
+        
+        document.getElementById('longUrl').value = '';
+        document.getElementById('customAlias').value = '';
+        
+        updateStats();
+        
+        if (savedToSupabase) {
+          showToast('✅ Short URL berhasil dibuat & disimpan ke Supabase!');
+        } else {
+          showToast('✅ Short URL dibuat (disimpan di browser)');
+        }
+        
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('❌ Gagal: ' + error.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Pendekkan Sekarang';
+      }
+    };
+
+    // ==================== RETRY CONNECTION ====================
+    window.retryConnection = async function() {
+      const statusText = document.getElementById('statusText');
+      const statusDot = document.getElementById('statusDot');
+      const errorHint = document.getElementById('errorHint');
+      
+      statusText.textContent = '🔄 Mencoba menghubungkan ke Supabase...';
+      statusDot.className = 'status-dot';
+      errorHint.classList.remove('show');
+      
+      try {
+        linkDataCache = await supabaseFetchAll();
+        updateConnectionStatus(true);
+        localStorage.setItem('staa_bento_links', JSON.stringify(linkDataCache));
+        updateStats();
+        showToast('✅ Berhasil terhubung ke Supabase!');
+      } catch (e) {
+        console.error('Connection error:', e);
+        
+        let errorMessage = e.message || 'Unknown error';
+        
+        if (errorMessage.includes('404')) {
+          errorMessage = 'HTTP 404: Tabel "links" tidak ditemukan. Jalankan SQL CREATE TABLE di dashboard Supabase.';
+        } else if (errorMessage.includes('401') || errorMessage.includes('403')) {
+          errorMessage = 'Authentication error. Periksa ANON_KEY di dashboard Supabase.';
+        } else if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
+          errorMessage = 'Gagal terhubung. Periksa koneksi internet atau URL Supabase.';
+        }
+        
+        updateConnectionStatus(false, errorMessage);
+        linkDataCache = JSON.parse(localStorage.getItem('staa_bento_links') || '{}');
+        updateStats();
+        showToast('❌ Gagal terhubung ke Supabase. Menggunakan localStorage.', 'error');
+      }
+    };
+
+    // ==================== THEME ====================
+    window.toggleTheme = function() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      const newTheme = isDark ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      
+      const icon = document.querySelector('#themeToggle i');
+      if (icon) {
+        icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+      }
+    };
+
+    // ==================== REDIRECT HANDLER ====================
+    async function handleRedirect() {
+      const params = new URLSearchParams(window.location.search);
+      const shortCode = params.get('r');
+      
+      if (!shortCode) return;
+      
+      try {
+        let urlData = linkDataCache[shortCode];
+        
+        if (!urlData && isOnline) {
+          try {
+            const freshData = await supabaseFetchAll();
+            urlData = freshData[shortCode];
+            if (urlData) {
+              linkDataCache[shortCode] = urlData;
+            }
+          } catch (e) {
+            console.warn('Gagal fetch data untuk redirect:', e);
+          }
+        }
+        
+        if (urlData) {
+          urlData.clicks = (urlData.clicks || 0) + 1;
+          
+          if (isOnline) {
+            try {
+              await supabaseUpdateClicks(shortCode, urlData.clicks);
+            } catch (e) {
+              console.warn('Gagal update clicks:', e);
+            }
+          }
+          
+          localStorage.setItem('staa_bento_links', JSON.stringify(linkDataCache));
+          
+          // Tampilkan halaman redirect modern
+          showRedirectOverlay(urlData.url);
+        } else {
+          showToast('❌ Short URL tidak ditemukan', 'error');
+        }
+      } catch (e) {
+        console.error('Redirect error:', e);
+      }
+    }
+
+    // ==================== INIT ====================
+    async function init() {
+      // Load theme
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      document.querySelector('#themeToggle i').className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+      
+      // Load data lokal dulu
+      linkDataCache = JSON.parse(localStorage.getItem('staa_bento_links') || '{}');
+      updateStats();
+      
+      // Coba koneksi ke Supabase
+      try {
+        const supabaseData = await supabaseFetchAll();
+        linkDataCache = supabaseData;
+        localStorage.setItem('staa_bento_links', JSON.stringify(linkDataCache));
+        updateConnectionStatus(true);
+        updateStats();
+        console.log('✅ Supabase connected successfully');
+      } catch (e) {
+        console.warn('⚠️ Supabase not reachable:', e.message);
+        
+        let errorMessage = e.message || 'Unknown error';
+        if (errorMessage.includes('404')) {
+          errorMessage = 'HTTP 404: Tabel "links" belum dibuat. Gunakan SQL Editor.';
+        }
+        
+        updateConnectionStatus(false, errorMessage);
+        updateStats();
+      }
+      
+      // Handle redirect
+      await handleRedirect();
+      
+      // Enter key listeners
+      document.getElementById('longUrl').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') shortenURL();
+      });
+      document.getElementById('customAlias').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') shortenURL();
+      });
+    }
+
+    // Jalankan
+    init();
+  </script>
+</body>
+</html>
