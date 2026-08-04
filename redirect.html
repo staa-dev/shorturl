@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0C0C1D 0%, #1A1A2E 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .loader {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+        
+        .loader-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid transparent;
+        }
+        
+        .loader-ring:nth-child(1) {
+            border-top-color: #6C5CE7;
+            animation: spin1 2s linear infinite;
+        }
+        
+        .loader-ring:nth-child(2) {
+            border-right-color: #00CEC9;
+            animation: spin2 2s linear infinite;
+        }
+        
+        .loader-ring:nth-child(3) {
+            border-bottom-color: #FD79A8;
+            animation: spin3 2s linear infinite;
+        }
+        
+        @keyframes spin1 {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes spin2 {
+            to { transform: rotate(-360deg); }
+        }
+        @keyframes spin3 {
+            to { transform: rotate(720deg); }
+        }
+        
+        .title {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6C5CE7, #00CEC9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+        
+        .status {
+            color: #B2BEC3;
+            font-size: 1rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .error-box {
+            background: rgba(225, 112, 85, 0.1);
+            border: 2px solid rgba(225, 112, 85, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .error-box.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .error-title {
+            color: #E17055;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .error-text {
+            color: #FAB1A0;
+            margin-bottom: 20px;
+        }
+        
+        .home-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #6C5CE7, #5A4BD1);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(108, 92, 231, 0.4);
+        }
+        
+        .background-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.3;
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: #6C5CE7;
+            top: -100px;
+            right: -100px;
+        }
+        
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: #00CEC9;
+            bottom: -50px;
+            left: -50px;
+            animation-delay: -10s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -30px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-gradient">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+    
+    <div class="container">
+        <div id="loadingState">
+            <div class="loader">
+                <div class="loader-ring"></div>
+                <div class="loader-ring"></div>
+                <div class="loader-ring"></div>
+            </div>
+            <h1 class="title">Mengarahkan</h1>
+            <p class="status" id="loadingStatus">Mencari link tujuan...</p>
+        </div>
+        
+        <div class="error-box" id="errorState">
+            <h2 class="error-title">⚠️ Link Tidak Ditemukan</h2>
+            <p class="error-text" id="errorDetail">Shortlink tidak valid atau sudah kadaluarsa</p>
+            <a href="/" class="home-btn">🏠 Kembali ke Beranda</a>
+        </div>
+    </div>
+
+    <script>
+        // Konfigurasi Supabase - GANTI DENGAN KREDENSIAL ANDA
+        const SUPABASE_URL = 'https://xxxxxxxxxxxx.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+        
+        async function redirect() {
+            const loadingStatus = document.getElementById('loadingStatus');
+            const errorState = document.getElementById('errorState');
+            const loadingState = document.getElementById('loadingState');
+            
+            // Get short code from URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const shortCode = urlParams.get('code');
+            
+            if (!shortCode) {
+                showError('Kode shortlink tidak ditemukan');
+                return;
+            }
+            
+            console.log('🔍 Processing short code:', shortCode);
+            
+            try {
+                // Initialize Supabase
+                const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                
+                loadingStatus.textContent = 'Menghubungkan ke database...';
+                
+                // Get original URL
+                const { data, error } = await supabase
+                    .from('shortlinks')
+                    .select('original_url, clicks')
+                    .eq('short_code', shortCode)
+                    .single();
+                
+                if (error || !data) {
+                    console.error('❌ Link not found:', error);
+                    showError('Link tidak ditemukan dalam database');
+                    return;
+                }
+                
+                console.log('✅ Link found:', data.original_url);
+                loadingStatus.textContent = 'Mengarahkan ke tujuan...';
+                
+                // Update click count asynchronously
+                updateClicks(supabase, shortCode, data.clicks);
+                
+                // Redirect setelah jeda singkat untuk UX
+                setTimeout(() => {
+                    window.location.href = data.original_url;
+                }, 800);
+                
+            } catch (error) {
+                console.error('❌ Fatal error:', error);
+                showError('Terjadi kesalahan sistem');
+            }
+        }
+        
+        async function updateClicks(supabase, shortCode, currentClicks) {
+            try {
+                const { error } = await supabase
+                    .from('shortlinks')
+                    .update({ clicks: (currentClicks || 0) + 1 })
+                    .eq('short_code', shortCode);
+                
+                if (error) {
+                    console.warn('⚠️ Failed to update clicks:', error);
+                } else {
+                    console.log('✅ Click count updated');
+                }
+            } catch (error) {
+                console.warn('⚠️ Click update error:', error);
+            }
+        }
+        
+        function showError(message) {
+            document.getElementById('loadingState').style.display = 'none';
+            const errorState = document.getElementById('errorState');
+            errorState.classList.add('show');
+            document.getElementById('errorDetail').textContent = message;
+        }
+        
+        // Start redirect
+        window.addEventListener('DOMContentLoaded', redirect);
+    </script>
+</body>
+</html>

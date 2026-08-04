@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShortLink - Pemendek URL Modern</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="bg-gradient bg-gradient-1"></div>
+        <div class="bg-gradient bg-gradient-2"></div>
+        <div class="bg-gradient bg-gradient-3"></div>
+        <div class="grid-pattern"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <div class="header-section">
+            <div class="logo-wrapper">
+                <div class="logo-circle">
+                    <i class="fas fa-link"></i>
+                </div>
+                <div class="logo-ring"></div>
+            </div>
+            <h1 class="app-title">ShortLink</h1>
+            <p class="app-subtitle">
+                <i class="fas fa-bolt"></i>
+                Pendekkan URL panjang dalam hitungan detik
+            </p>
+        </div>
+
+        <!-- Main Card -->
+        <div class="main-card">
+            <!-- Input Section -->
+            <div class="input-section">
+                <label class="input-label">
+                    <i class="fas fa-paste"></i>
+                    Tempel URL panjang Anda
+                </label>
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <i class="fas fa-globe input-icon-left"></i>
+                        <input 
+                            type="url" 
+                            id="urlInput" 
+                            class="url-input"
+                            placeholder="https://contoh.com/url-sangat-panjang..."
+                            autocomplete="off"
+                        >
+                        <button class="clear-btn" id="clearBtn" title="Hapus">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <button type="button" id="submitBtn" class="btn btn-primary">
+                        <i class="fas fa-scissors"></i>
+                        <span id="btnText">Pendekkan</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Result Section -->
+            <div id="result" class="result-card hidden">
+                <div class="result-header">
+                    <div class="result-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <span class="result-title">Link pendek berhasil dibuat!</span>
+                </div>
+                <div class="shortlink-display">
+                    <input type="text" id="shortUrl" class="shortlink-input" readonly>
+                    <button type="button" id="copyBtn" class="btn-copy">
+                        <i class="fas fa-copy"></i>
+                        <span>Salin</span>
+                    </button>
+                </div>
+                <div class="result-actions">
+                    <a id="previewLink" class="btn-outline" target="_blank" rel="noopener noreferrer">
+                        <i class="fas fa-external-link-alt"></i>
+                        Buka Link Asli
+                    </a>
+                    <button class="btn-outline" id="newLinkBtn">
+                        <i class="fas fa-plus-circle"></i>
+                        Buat Baru
+                    </button>
+                </div>
+            </div>
+
+            <!-- Error Section -->
+            <div id="error" class="error-card hidden">
+                <i class="fas fa-exclamation-circle error-icon"></i>
+                <span id="errorMessage"></span>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Dibuat dengan <i class="fas fa-heart"></i> oleh Anda • Cepat, Aman, Gratis</p>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+</html>
