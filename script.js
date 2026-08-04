@@ -194,7 +194,8 @@ async function createShortlink() {
         }
         
         // Success!
-        const shortUrl = `${window.location.origin}/s/${shortCode}`;
+ // Di bagian createShortlink function, setelah sukses insert:
+const shortUrl = `${window.location.origin}/s/${shortCode}`;
         
         // Update UI
         elements.shortUrl.value = shortUrl;
