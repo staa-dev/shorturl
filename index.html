@@ -662,7 +662,7 @@
       <div class="bento-card card-hero">
         <div class="hero-title"><i class="fas fa-bolt" style="color:var(--orange); margin-right:0.3rem;"></i> Potong Tautan</div>
         <div class="hero-sub">Desain Bento Grid · Orange & Monokrom</div>
-        <div class="domain-badge"><i class="fas fa-globe"></i> ishortener.netlify.app</div>
+        <div class="domain-badge"><i class="fas fa-globe"></i> <span id="domainDisplay">-</span></div>
       </div>
 
       <!-- Create -->
@@ -670,7 +670,7 @@
         <div class="section-title"><i class="fas fa-scissors"></i> Buat Short URL Baru</div>
         <input type="text" class="input-modern" id="longUrl" placeholder="Tempel URL panjang di sini...">
         <div class="alias-wrapper">
-          <span class="alias-prefix">ishortener.netlify.app/</span>
+          <span class="alias-prefix" id="aliasPrefix">-</span>
           <input type="text" class="alias-input" id="customAlias" placeholder="custom-alias (opsional)">
         </div>
         <button class="btn-primary" id="shortenBtn" onclick="shortenURL()">
@@ -708,7 +708,7 @@
 
       <!-- Footer -->
       <div class="card-footer">
-        <div class="footer-text">© 2026 STAA.DEV · Powered by <i class="fas fa-database"></i> Supabase · ishortener.netlify.app</div>
+        <div class="footer-text">© 2026 STAA.DEV · Powered by <i class="fas fa-database"></i> Supabase · <span id="footerDomain">-</span></div>
       </div>
     </div>
   </div>
@@ -753,7 +753,46 @@
     const SUPABASE_URL = 'https://wbibstumuvqytzlrqvoj.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaWJzdHVtdXZxeXR6bHJxdm9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MDk5OTUsImV4cCI6MjEwMTM4NTk5NX0.TWQO4vS1tvHdve7dfrvZsrM34qiiQC_zO8B81bS-pKk';
     const TABLE_NAME = 'links';
-    const CLEAN_DOMAIN = 'https://ishortener.netlify.app';
+    
+    // ==================== DETEKSI DOMAIN OTOMATIS ====================
+    function getCurrentDomain() {
+      const { hostname, pathname } = window.location;
+      
+      // Untuk GitHub Pages: username.github.io/repo
+      if (hostname.includes('github.io')) {
+        const parts = pathname.split('/').filter(p => p);
+        if (parts.length > 0) {
+          return `${hostname}/${parts[0]}`;
+        }
+        return hostname;
+      }
+      
+      // Untuk custom domain atau localhost
+      return hostname;
+    }
+
+    function getBasePath() {
+      const { hostname, pathname } = window.location;
+      
+      if (hostname.includes('github.io')) {
+        const parts = pathname.split('/').filter(p => p);
+        if (parts.length > 0) {
+          return '/' + parts[0];
+        }
+        return '';
+      }
+      
+      return '';
+    }
+
+    const DOMAIN = getCurrentDomain();
+    const BASE_PATH = getBasePath();
+    const CLEAN_DOMAIN = window.location.origin + BASE_PATH;
+
+    // Update tampilan domain
+    document.getElementById('domainDisplay').textContent = DOMAIN;
+    document.getElementById('aliasPrefix').textContent = DOMAIN + '/';
+    document.getElementById('footerDomain').textContent = DOMAIN;
 
     // ==================== REDIRECT STATE ====================
     let redirectTimer = null;
@@ -945,7 +984,7 @@
       
       // Bersihkan parameter URL
       if (window.history && window.history.replaceState) {
-        window.history.replaceState({}, document.title, window.location.pathname);
+        window.history.replaceState({}, document.title, BASE_PATH || '/');
       }
     };
 
@@ -1039,7 +1078,8 @@
           }
         }
         
-        const shortURL = `${CLEAN_DOMAIN}/${shortCode}`;
+        // Buat short URL dengan domain yang benar
+        const shortURL = `${CLEAN_DOMAIN}?r=${shortCode}`;
         document.getElementById('resultShort').textContent = shortURL;
         resultArea.style.display = 'block';
         
