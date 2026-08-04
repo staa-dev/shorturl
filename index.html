@@ -20,6 +20,7 @@
       --gray-900: #111827;
       --white: #ffffff;
       --black: #0a0a0a;
+      --red: #DA1107;
       
       --bg-primary: var(--white);
       --bg-secondary: var(--gray-50);
@@ -423,7 +424,7 @@
       transform: translateX(0);
     }
 
-    /* Redirect Overlay */
+    /* ===== REDIRECT OVERLAY ===== */
     .redirect-overlay {
       display: none;
       position: fixed;
@@ -435,6 +436,12 @@
       z-index: 9999;
       align-items: center;
       justify-content: center;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .redirect-overlay.show {
@@ -450,18 +457,37 @@
       text-align: center;
       max-width: 480px;
       width: 90%;
-      animation: slideUp 0.5s ease;
+      animation: slideUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
     }
 
     @keyframes slideUp {
       from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(40px) scale(0.95);
       }
       to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
       }
+    }
+
+    .redirect-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 20%, rgba(227,127,6,0.05) 0%, transparent 60%);
+      animation: rotateBg 20s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes rotateBg {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
     .redirect-icon-wrapper {
@@ -475,16 +501,20 @@
       margin: 0 auto 1.5rem;
       font-size: 2rem;
       color: white;
-      animation: pulse 2s infinite;
+      animation: pulseIcon 2s ease-in-out infinite;
       box-shadow: 0 8px 24px rgba(227,127,6,0.3);
+      position: relative;
+      z-index: 1;
     }
 
-    @keyframes pulse {
+    @keyframes pulseIcon {
       0%, 100% {
         transform: scale(1);
+        box-shadow: 0 8px 24px rgba(227,127,6,0.3);
       }
       50% {
-        transform: scale(1.05);
+        transform: scale(1.08);
+        box-shadow: 0 12px 36px rgba(227,127,6,0.5);
       }
     }
 
@@ -492,13 +522,17 @@
       font-size: 1.4rem;
       font-weight: 800;
       color: var(--text-primary);
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.3rem;
+      position: relative;
+      z-index: 1;
     }
 
     .redirect-subtitle {
       font-size: 0.85rem;
       color: var(--text-secondary);
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
     }
 
     .redirect-url-display {
@@ -509,35 +543,55 @@
       font-size: 0.8rem;
       color: var(--text-muted);
       word-break: break-all;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.2rem;
       font-weight: 500;
+      position: relative;
+      z-index: 1;
     }
 
+    .redirect-url-display i {
+      color: var(--orange);
+      margin-right: 0.3rem;
+    }
+
+    /* Countdown */
     .countdown-wrapper {
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.2rem;
+      position: relative;
+      z-index: 1;
     }
 
     .countdown-circle {
-      width: 100px;
-      height: 100px;
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
       background: var(--bg-secondary);
       border: 3px solid var(--orange);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 0.5rem;
+      margin: 0 auto 0.3rem;
       position: relative;
+      transition: border-color 0.3s ease;
+    }
+
+    .countdown-circle.done {
+      border-color: #10b981;
     }
 
     .countdown-number {
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       font-weight: 800;
       color: var(--orange);
+      transition: color 0.3s ease;
+    }
+
+    .countdown-number.done {
+      color: #10b981;
     }
 
     .countdown-label {
-      font-size: 0.75rem;
+      font-size: 0.65rem;
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -549,8 +603,8 @@
       background: var(--bg-secondary);
       border-radius: 50px;
       overflow: hidden;
-      margin-bottom: 1.5rem;
       border: 1px solid var(--border-color);
+      margin-top: 0.5rem;
     }
 
     .progress-fill {
@@ -561,10 +615,102 @@
       width: 100%;
     }
 
+    .progress-fill.done {
+      background: #10b981;
+    }
+
+    /* Steps - 2 Steps */
+    .redirect-steps {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      margin-bottom: 1.2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .step-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      border: 2px solid var(--border-color);
+      color: var(--text-muted);
+      transition: all 0.3s ease;
+      background: var(--bg-secondary);
+    }
+
+    .step-circle.active {
+      border-color: var(--orange);
+      background: var(--orange);
+      color: white;
+      box-shadow: 0 4px 12px rgba(227,127,6,0.3);
+      animation: popStep 0.5s ease;
+    }
+
+    @keyframes popStep {
+      0% { transform: scale(0.8); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .step-circle.done {
+      border-color: #10b981;
+      background: #10b981;
+      color: white;
+    }
+
+    .step-circle.youtube-step {
+      border-color: #FF0000;
+      background: #FF0000;
+      color: white;
+    }
+
+    .step-label {
+      font-size: 0.55rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .step-connector {
+      flex: 1;
+      height: 2px;
+      background: var(--border-color);
+      max-width: 30px;
+      position: relative;
+    }
+
+    .step-connector .connector-fill {
+      height: 100%;
+      background: var(--orange);
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .step-connector.done .connector-fill {
+      width: 100%;
+    }
+
     .redirect-buttons {
       display: flex;
       flex-direction: column;
       gap: 0.6rem;
+      position: relative;
+      z-index: 1;
     }
 
     .btn-redirect {
@@ -580,6 +726,24 @@
       gap: 0.5rem;
       transition: var(--transition);
       border: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-redirect .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transform: scale(0);
+      animation: rippleAnim 0.6s linear;
+      pointer-events: none;
+    }
+
+    @keyframes rippleAnim {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
     }
 
     .btn-go {
@@ -587,10 +751,30 @@
       color: white;
     }
 
-    .btn-go:hover {
+    .btn-go:hover:not(:disabled) {
       background: var(--orange-hover);
       transform: translateY(-2px);
       box-shadow: 0 8px 16px -6px rgba(227,127,6,0.3);
+    }
+
+    .btn-go:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .btn-go .click-hint {
+      font-size: 0.6rem;
+      opacity: 0.7;
+      font-weight: 400;
+    }
+
+    .btn-go .click-count {
+      background: rgba(255,255,255,0.2);
+      padding: 0.1rem 0.5rem;
+      border-radius: 50px;
+      font-size: 0.7rem;
+      margin-left: 0.3rem;
     }
 
     .btn-cancel {
@@ -602,6 +786,45 @@
     .btn-cancel:hover {
       background: var(--gray-200);
       transform: translateY(-2px);
+    }
+
+    /* Particles */
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--orange);
+      opacity: 0;
+      animation: particleFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes particleFloat {
+      0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0);
+      }
+      20% {
+        opacity: 0.4;
+      }
+      80% {
+        opacity: 0.4;
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-60px) scale(1);
+      }
     }
 
     @media (max-width: 700px) {
@@ -617,6 +840,19 @@
       }
       .redirect-card {
         padding: 2rem 1.5rem;
+      }
+      .redirect-steps {
+        gap: 0.5rem;
+      }
+      .step-connector {
+        max-width: 20px;
+      }
+      .countdown-circle {
+        width: 70px;
+        height: 70px;
+      }
+      .countdown-number {
+        font-size: 1.8rem;
       }
     }
   </style>
@@ -641,7 +877,7 @@
         <div class="status-row">
           <div class="status-info">
             <span class="status-dot" id="statusDot"></span>
-            <span id="statusText">Menghubungkan ke Supabase...</span>
+            <span id="statusText"><i class="fas fa-spinner fa-spin"></i> Menghubungkan ke Supabase...</span>
           </div>
           <div>
             <button class="retry-btn" onclick="retryConnection()">
@@ -650,25 +886,25 @@
           </div>
         </div>
         <div class="error-hint" id="errorHint">
-          <strong>⚠️ HTTP 404:</strong> Tabel 'links' belum dibuat di Supabase.<br>
-          Buka <strong>SQL Editor</strong> di dashboard Supabase dan jalankan query CREATE TABLE.
+          <i class="fas fa-exclamation-triangle"></i> <strong>HTTP 404:</strong> Tabel 'links' belum dibuat di Supabase.<br>
+          <i class="fas fa-database"></i> Buka <strong>SQL Editor</strong> di dashboard Supabase dan jalankan query CREATE TABLE.
         </div>
       </div>
 
       <!-- Hero -->
       <div class="bento-card card-hero">
         <div class="hero-title"><i class="fas fa-bolt" style="color:var(--orange); margin-right:0.3rem;"></i> Potong Tautan</div>
-        <div class="hero-sub">Desain Bento Grid · Orange & Monokrom</div>
+        <div class="hero-sub"><i class="fas fa-grid-2"></i> Desain Bento Grid · <i class="fas fa-circle" style="color:var(--orange);"></i> Orange & Monokrom</div>
         <div class="domain-badge"><i class="fas fa-globe"></i> <span id="domainDisplay">-</span></div>
       </div>
 
       <!-- Create -->
       <div class="bento-card card-create">
         <div class="section-title"><i class="fas fa-scissors"></i> Buat Short URL Baru</div>
-        <input type="text" class="input-modern" id="longUrl" placeholder="Tempel URL panjang di sini...">
+        <input type="text" class="input-modern" id="longUrl" placeholder='Tempel URL panjang di sini...'>
         <div class="alias-wrapper">
-          <span class="alias-prefix" id="aliasPrefix">-</span>
-          <input type="text" class="alias-input" id="customAlias" placeholder="custom-alias (opsional)">
+          <span class="alias-prefix" id="aliasPrefix"><i class="fas fa-link"></i> -</span>
+          <input type="text" class="alias-input" id="customAlias" placeholder=' custom-alias (opsional)'>
         </div>
         <button class="btn-primary" id="shortenBtn" onclick="shortenURL()">
           <i class="fas fa-wand-magic-sparkles"></i> Pendekkan Sekarang
@@ -688,24 +924,24 @@
           <div class="stat-item">
             <div class="stat-icon"><i class="fas fa-link"></i></div>
             <div class="stat-value" id="totalLinks">0</div>
-            <div class="stat-label">Total Link</div>
+            <div class="stat-label"><i class="fas fa-hashtag"></i> Total Link</div>
           </div>
           <div class="stat-item">
             <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
             <div class="stat-value" id="todayLinks">0</div>
-            <div class="stat-label">Hari Ini</div>
+            <div class="stat-label"><i class="fas fa-clock"></i> Hari Ini</div>
           </div>
           <div class="stat-item">
             <div class="stat-icon"><i class="fas fa-mouse-pointer"></i></div>
             <div class="stat-value" id="totalClicks">0</div>
-            <div class="stat-label">Total Klik</div>
+            <div class="stat-label"><i class="fas fa-hand-pointer"></i> Total Klik</div>
           </div>
         </div>
       </div>
 
       <!-- Footer -->
       <div class="card-footer">
-        <div class="footer-text">© 2026 MRBKP · Powered by <i class="fas fa-database"></i> Supabase · <span id="footerDomain">-</span></div>
+        <div class="footer-text"><i class="far fa-copyright"></i> 2026 MRBKP · <i class="fas fa-bolt"></i> Powered by <i class="fas fa-database"></i> Supabase · <span id="footerDomain">-</span></div>
       </div>
     </div>
   </div>
@@ -713,27 +949,51 @@
   <!-- Redirect Overlay -->
   <div class="redirect-overlay" id="redirectOverlay">
     <div class="redirect-card">
-      <div class="redirect-icon-wrapper">
-        <i class="fas fa-rocket"></i>
-      </div>
-      <div class="redirect-title">Mengalihkan Anda...</div>
-      <div class="redirect-subtitle">Mohon tunggu sebentar</div>
-      <div class="redirect-url-display" id="redirectUrlDisplay">-</div>
+      <!-- Particles -->
+      <div class="particles" id="particlesContainer"></div>
       
+      <div class="redirect-icon-wrapper">
+        <i class="fab fa-youtube"></i>
+      </div>
+      <div class="redirect-title" id="redirectTitle"><i class="fas fa-link"></i> Short URL Siap!</div>
+      <div class="redirect-subtitle" id="redirectSubtitle"><i class="fas fa-hourglass-half"></i> Tunggu countdown selesai</div>
+      
+      <div class="redirect-url-display" id="redirectUrlDisplay">
+        <i class="fas fa-lock"></i> <span id="redirectShortUrl">-</span>
+      </div>
+      
+      <!-- Countdown -->
       <div class="countdown-wrapper">
-        <div class="countdown-circle">
+        <div class="countdown-circle" id="countdownCircle">
           <span class="countdown-number" id="countdownNumber">10</span>
         </div>
-        <div class="countdown-label">detik</div>
+        <div class="countdown-label"><i class="far fa-clock"></i> detik</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
       </div>
       
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
+      <!-- Steps - 2 Steps -->
+      <div class="redirect-steps" id="redirectSteps">
+        <div class="step-item">
+          <div class="step-circle active" id="step1">1</div>
+          <div class="step-label"><i class="fab fa-youtube"></i> YouTube</div>
+        </div>
+        <div class="step-connector" id="connector1">
+          <div class="connector-fill"></div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle" id="step2">2</div>
+          <div class="step-label"><i class="fas fa-flag-checkered"></i> Tujuan</div>
+        </div>
       </div>
       
       <div class="redirect-buttons">
-        <button class="btn-redirect btn-go" onclick="goNow()">
-          <i class="fas fa-bolt"></i> Buka Sekarang
+        <button class="btn-redirect btn-go" id="redirectBtn" onclick="handleRedirectClick()" disabled>
+          <i class="fas fa-hourglass-half"></i> 
+          <span id="btnText">Tunggu...</span>
+          <span class="click-count" id="clickCount">0/2</span>
+          <span class="click-hint">(klik 2x)</span>
         </button>
         <button class="btn-redirect btn-cancel" onclick="cancelRedirect()">
           <i class="fas fa-times"></i> Batal
@@ -746,16 +1006,19 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    // ==================== KONFIGURASI SUPABASE ====================
+    // ==================== KONFIGURASI ====================
     const SUPABASE_URL = 'https://wbibstumuvqytzlrqvoj.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaWJzdHVtdXZxeXR6bHJxdm9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MDk5OTUsImV4cCI6MjEwMTM4NTk5NX0.TWQO4vS1tvHdve7dfrvZsrM34qiiQC_zO8B81bS-pKk';
     const TABLE_NAME = 'links';
+    
+    // ==================== YOUTUBE CHANNEL ====================
+    // GANTI DENGAN LINK CHANNEL YOUTUBE ANDA
+    const YOUTUBE_CHANNEL_URL = 'https://youtube.com/@mrbkpid?si=etCD3DJyKPG2vwdc';
     
     // ==================== DETEKSI DOMAIN OTOMATIS ====================
     function getCurrentDomain() {
       const { hostname, pathname } = window.location;
       
-      // Untuk GitHub Pages: username.github.io/repo
       if (hostname.includes('github.io')) {
         const parts = pathname.split('/').filter(p => p);
         if (parts.length > 0) {
@@ -764,7 +1027,6 @@
         return hostname;
       }
       
-      // Untuk custom domain atau localhost
       return hostname;
     }
 
@@ -788,12 +1050,19 @@
 
     // Update tampilan domain
     document.getElementById('domainDisplay').textContent = DOMAIN;
-    document.getElementById('aliasPrefix').textContent = DOMAIN + '/';
+    document.getElementById('aliasPrefix').innerHTML = '<i class="fas fa-link"></i> ' + DOMAIN + '/';
     document.getElementById('footerDomain').textContent = DOMAIN;
 
     // ==================== REDIRECT STATE ====================
     let redirectTimer = null;
+    let countdownTimer = null;
     let targetUrl = '';
+    let shortCode = '';
+    let clickCount = 0;
+    let isRedirectActive = false;
+    let countdownDone = false;
+    let countdownValue = 10;
+    let clickStep = 0; // 0=countdown, 1=youtube, 2=target
 
     // ==================== FUNGSI SUPABASE ====================
     async function supabaseFetchAll() {
@@ -891,7 +1160,7 @@
     // ==================== UI HELPERS ====================
     function showToast(message, type = 'success') {
       const toast = document.getElementById('toast');
-      toast.textContent = message;
+      toast.innerHTML = message;
       toast.style.borderColor = type === 'error' ? '#ef4444' : 'var(--orange)';
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 4000);
@@ -905,24 +1174,19 @@
       
       if (online) {
         dot.className = 'status-dot online';
-        text.textContent = '✅ Terhubung ke Supabase';
+        text.innerHTML = '<i class="fas fa-check-circle" style="color:#10b981;"></i> Terhubung ke Supabase';
         errorHint.classList.remove('show');
       } else {
         dot.className = 'status-dot';
-        text.textContent = '⚠️ Offline (Menggunakan LocalStorage)';
+        text.innerHTML = '<i class="fas fa-exclamation-circle" style="color:#ef4444;"></i> Offline (Menggunakan LocalStorage)';
         if (errorMessage) {
-          errorHint.innerHTML = `<strong>⚠️ Error:</strong> ${errorMessage}<br>
-          <small>Buka <strong>SQL Editor</strong> di dashboard Supabase dan jalankan query CREATE TABLE.</small>`;
+          errorHint.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <strong>Error:</strong> ${errorMessage}<br>
+          <i class="fas fa-database"></i> Buka <strong>SQL Editor</strong> di dashboard Supabase dan jalankan query CREATE TABLE.`;
           errorHint.classList.add('show');
           lastError = errorMessage;
         }
       }
     }
-
-    window.showSetupGuide = function() {
-      const guide = `📋 SETUP SUPABASE:\n1. Buka dashboard Supabase\n2. Pilih project Anda\n3. Buka SQL Editor\n4. Copy & jalankan query ini:\n\nCREATE TABLE links (\n  short_code TEXT PRIMARY KEY,\n  url TEXT NOT NULL,\n  created_at TIMESTAMPTZ DEFAULT NOW(),\n  clicks BIGINT DEFAULT 0\n);\n\nALTER TABLE links ENABLE ROW LEVEL SECURITY;\n\nCREATE POLICY "Allow all" ON links\n  FOR ALL USING (true);\n\n5. Klik "Run"\n6. Refresh halaman ini\n\nError saat ini: ${lastError || 'HTTP 404'}`;
-      alert(guide);
-    };
 
     function generateShortCode(length = 5) {
       const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -948,57 +1212,224 @@
     }
 
     // ==================== REDIRECT FUNCTIONS ====================
-    function startRedirectCountdown(url) {
-      targetUrl = url;
-      document.getElementById('progressFill').style.width = '100%';
+    function createParticles() {
+      const container = document.getElementById('particlesContainer');
+      container.innerHTML = '';
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 3 + 's';
+        particle.style.animationDuration = (2 + Math.random() * 2) + 's';
+        particle.style.width = (4 + Math.random() * 6) + 'px';
+        particle.style.height = particle.style.width;
+        container.appendChild(particle);
+      }
+    }
+
+    function updateRedirectSteps(step) {
+      const step1 = document.getElementById('step1');
+      const step2 = document.getElementById('step2');
+      const conn1 = document.getElementById('connector1');
       
-      let countdown = 10;
-      document.getElementById('countdownNumber').textContent = countdown;
+      step1.className = 'step-circle';
+      step2.className = 'step-circle';
+      conn1.className = 'step-connector';
       
-      if (redirectTimer) clearInterval(redirectTimer);
+      if (step >= 1) {
+        step1.className = 'step-circle youtube-step';
+        conn1.className = 'step-connector done';
+      }
+      if (step >= 2) {
+        step2.className = 'step-circle done';
+      }
       
-      redirectTimer = setInterval(() => {
-        countdown--;
-        document.getElementById('countdownNumber').textContent = countdown;
-        document.getElementById('progressFill').style.width = (countdown * 10) + '%';
+      if (step === 1) {
+        step1.style.animation = 'popStep 0.5s ease';
+        setTimeout(() => step1.style.animation = '', 600);
+      } else if (step === 2) {
+        step2.style.animation = 'popStep 0.5s ease';
+        setTimeout(() => step2.style.animation = '', 600);
+      }
+    }
+
+    function startCountdown() {
+      countdownValue = 10;
+      countdownDone = false;
+      clickStep = 0;
+      const btn = document.getElementById('redirectBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-hourglass-half"></i> <span id="btnText">Tunggu...</span> <span class="click-count" id="clickCount">0/2</span> <span class="click-hint">(klik 2x)</span>';
+      
+      document.getElementById('countdownNumber').textContent = countdownValue;
+      document.getElementById('countdownNumber').className = 'countdown-number';
+      document.getElementById('countdownCircle').className = 'countdown-circle';
+      document.getElementById('progressFill').className = 'progress-fill';
+      document.getElementById('redirectSubtitle').innerHTML = '<i class="fas fa-hourglass-half"></i> Tunggu countdown selesai';
+      
+      if (countdownTimer) clearInterval(countdownTimer);
+      
+      countdownTimer = setInterval(() => {
+        countdownValue--;
+        document.getElementById('countdownNumber').textContent = countdownValue;
+        document.getElementById('progressFill').style.width = (countdownValue * 10) + '%';
         
-        if (countdown <= 0) {
-          clearInterval(redirectTimer);
-          redirectTimer = null;
-          window.location.href = targetUrl;
+        if (countdownValue <= 0) {
+          clearInterval(countdownTimer);
+          countdownTimer = null;
+          countdownDone = true;
+          clickStep = 1;
+          
+          document.getElementById('countdownNumber').textContent = '✓';
+          document.getElementById('countdownNumber').className = 'countdown-number done';
+          document.getElementById('countdownCircle').className = 'countdown-circle done';
+          document.getElementById('progressFill').className = 'progress-fill done';
+          document.getElementById('progressFill').style.width = '100%';
+          document.getElementById('redirectSubtitle').innerHTML = '<i class="fas fa-check-circle" style="color:#10b981;"></i> Countdown selesai! Klik 2x untuk membuka';
+          
+          const btn = document.getElementById('redirectBtn');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fab fa-youtube"></i> <span id="btnText">Buka YouTube</span> <span class="click-count" id="clickCount">0/2</span> <span class="click-hint">(klik 2x)</span>';
+          btn.style.background = '#FF0000';
+          
+          updateRedirectSteps(1);
+          showToast('✅ Countdown selesai! Klik 2x untuk membuka', 'success');
         }
       }, 1000);
     }
 
-    window.cancelRedirect = function() {
-      if (redirectTimer) {
-        clearInterval(redirectTimer);
-        redirectTimer = null;
-      }
-      document.getElementById('mainContent').style.display = '';
-      document.getElementById('redirectOverlay').classList.remove('show');
-      targetUrl = '';
+    function startRedirect(shortCodeParam, urlParam) {
+      shortCode = shortCodeParam;
+      targetUrl = urlParam;
+      clickCount = 0;
+      isRedirectActive = true;
+      countdownDone = false;
+      clickStep = 0;
       
-      // Bersihkan parameter URL
-      if (window.history && window.history.replaceState) {
-        window.history.replaceState({}, document.title, BASE_PATH || '/');
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('redirectOverlay').classList.add('show');
+      
+      const shortURL = `${CLEAN_DOMAIN}?r=${shortCode}`;
+      document.getElementById('redirectShortUrl').textContent = shortURL;
+      document.getElementById('redirectUrlDisplay').innerHTML = `<i class="fas fa-link"></i> ${shortURL}`;
+      
+      const btn = document.getElementById('redirectBtn');
+      btn.disabled = true;
+      document.getElementById('btnText').textContent = 'Tunggu...';
+      document.getElementById('clickCount').textContent = '0/2';
+      
+      updateRedirectSteps(0);
+      createParticles();
+      
+      document.getElementById('redirectTitle').innerHTML = '<i class="fas fa-link"></i> Short URL Siap!';
+      document.getElementById('redirectSubtitle').innerHTML = '<i class="fas fa-hourglass-half"></i> Tunggu countdown selesai';
+      
+      startCountdown();
+    }
+
+    window.handleRedirectClick = function() {
+      if (!isRedirectActive || !countdownDone) return;
+      
+      clickCount++;
+      const btn = document.getElementById('redirectBtn');
+      const btnText = document.getElementById('btnText');
+      const clickCountEl = document.getElementById('clickCount');
+      
+      if (clickCount === 1) {
+        // Klik 1: Buka YouTube Channel
+        btnText.textContent = '🎬 YouTube Channel';
+        clickCountEl.textContent = '1/2';
+        clickStep = 1;
+        updateRedirectSteps(1);
+        
+        btn.style.background = '#FF0000';
+        btn.style.transform = 'scale(0.98)';
+        setTimeout(() => btn.style.transform = '', 200);
+        createRipple(btn);
+        
+        // Buka YouTube channel di tab baru
+        window.open(YOUTUBE_CHANNEL_URL, '_blank');
+        
+        // Ubah tombol untuk step 2
+        setTimeout(() => {
+          btnText.textContent = '🚀 Buka Tujuan';
+          btn.style.background = '#10b981';
+          clickCountEl.textContent = '1/2';
+        }, 300);
+        
+        showToast('🎬 Channel YouTube dibuka! Klik sekali lagi untuk tujuan', 'success');
+        
+      } else if (clickCount === 2) {
+        // Klik 2: Buka tujuan akhir
+        btnText.textContent = '🚀 Membuka tujuan...';
+        clickCountEl.textContent = '2/2';
+        clickStep = 2;
+        btn.disabled = true;
+        updateRedirectSteps(2);
+        
+        btn.style.background = '#059669';
+        btn.style.transform = 'scale(0.95)';
+        
+        // Update clicks
+        if (linkDataCache[shortCode]) {
+          linkDataCache[shortCode].clicks = (linkDataCache[shortCode].clicks || 0) + 1;
+          if (isOnline) {
+            supabaseUpdateClicks(shortCode, linkDataCache[shortCode].clicks).catch(() => {});
+          }
+          localStorage.setItem('staa_bento_links', JSON.stringify(linkDataCache));
+          updateStats();
+        }
+        
+        showToast('🚀 Mengalihkan ke tujuan...', 'success');
+        
+        setTimeout(() => {
+          window.location.href = targetUrl;
+        }, 600);
       }
     };
 
-    window.goNow = function() {
-      if (redirectTimer) {
-        clearInterval(redirectTimer);
-        redirectTimer = null;
+    function createRipple(element) {
+      const ripple = document.createElement('span');
+      ripple.className = 'ripple';
+      const rect = element.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      ripple.style.width = ripple.style.height = size + 'px';
+      ripple.style.left = (rect.width / 2 - size / 2) + 'px';
+      ripple.style.top = (rect.height / 2 - size / 2) + 'px';
+      element.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    }
+
+    window.cancelRedirect = function() {
+      if (countdownTimer) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
       }
-      if (targetUrl) {
-        window.location.href = targetUrl;
+      isRedirectActive = false;
+      clickCount = 0;
+      countdownDone = false;
+      clickStep = 0;
+      document.getElementById('mainContent').style.display = '';
+      document.getElementById('redirectOverlay').classList.remove('show');
+      targetUrl = '';
+      shortCode = '';
+      
+      const btn = document.getElementById('redirectBtn');
+      btn.disabled = false;
+      document.getElementById('btnText').textContent = 'Buka YouTube';
+      document.getElementById('clickCount').textContent = '0/2';
+      btn.style.background = '#FF0000';
+      
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState({}, document.title, BASE_PATH || '/');
       }
     };
 
     // ==================== AKSI ====================
     window.copyToClipboard = function(text) {
       navigator.clipboard.writeText(text).then(() => {
-        showToast('📋 URL berhasil disalin!');
+        showToast('📋 URL berhasil disalin!', 'success');
       }).catch(() => {
         showToast('Gagal menyalin URL', 'error');
       });
@@ -1061,11 +1492,9 @@
           clicks: 0
         };
         
-        // Simpan ke localStorage dulu
         linkDataCache[shortCode] = urlData;
         localStorage.setItem('staa_bento_links', JSON.stringify(linkDataCache));
         
-        // Coba simpan ke Supabase
         let savedToSupabase = false;
         if (isOnline) {
           try {
@@ -1075,7 +1504,6 @@
           }
         }
         
-        // Buat short URL dengan domain yang benar
         const shortURL = `${CLEAN_DOMAIN}?r=${shortCode}`;
         document.getElementById('resultShort').textContent = shortURL;
         resultArea.style.display = 'block';
@@ -1086,9 +1514,9 @@
         updateStats();
         
         if (savedToSupabase) {
-          showToast('✅ Short URL berhasil dibuat & disimpan ke Supabase!');
+          showToast('✅ Short URL berhasil dibuat & disimpan ke Supabase!', 'success');
         } else {
-          showToast('✅ Short URL dibuat (disimpan di browser)');
+          showToast('✅ Short URL dibuat (disimpan di browser)', 'success');
         }
         
       } catch (error) {
@@ -1106,7 +1534,7 @@
       const statusDot = document.getElementById('statusDot');
       const errorHint = document.getElementById('errorHint');
       
-      statusText.textContent = '🔄 Mencoba menghubungkan ke Supabase...';
+      statusText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mencoba menghubungkan ke Supabase...';
       statusDot.className = 'status-dot';
       errorHint.classList.remove('show');
       
@@ -1115,7 +1543,7 @@
         updateConnectionStatus(true);
         localStorage.setItem('staa_bento_links', JSON.stringify(linkDataCache));
         updateStats();
-        showToast('✅ Berhasil terhubung ke Supabase!');
+        showToast('✅ Berhasil terhubung ke Supabase!', 'success');
       } catch (e) {
         console.error('Connection error:', e);
         
@@ -1153,84 +1581,45 @@
     // ==================== REDIRECT HANDLER ====================
     async function handleRedirect() {
       const params = new URLSearchParams(window.location.search);
-      const shortCode = params.get('r');
+      const shortCodeParam = params.get('r');
       
-      if (!shortCode) return;
+      if (!shortCodeParam) return;
       
-      // Tampilkan overlay segera
-      document.getElementById('mainContent').style.display = 'none';
-      document.getElementById('redirectOverlay').classList.add('show');
-      document.getElementById('redirectUrlDisplay').textContent = '🔍 Mencari URL tujuan...';
-      document.getElementById('countdownNumber').textContent = '...';
+      let urlData = linkDataCache[shortCodeParam];
       
-      try {
-        let urlData = linkDataCache[shortCode];
-        
-        // Coba fetch langsung dari Supabase jika tidak ada di cache
-        if (!urlData && isOnline) {
-          try {
-            urlData = await supabaseFetchOne(shortCode);
-            if (urlData) {
-              linkDataCache[shortCode] = urlData;
-              localStorage.setItem('staa_bento_links', JSON.stringify(linkDataCache));
-            }
-          } catch (e) {
-            console.warn('Gagal fetch dari Supabase:', e);
+      if (!urlData && isOnline) {
+        try {
+          urlData = await supabaseFetchOne(shortCodeParam);
+          if (urlData) {
+            linkDataCache[shortCodeParam] = urlData;
+            localStorage.setItem('staa_bento_links', JSON.stringify(linkDataCache));
           }
+        } catch (e) {
+          console.warn('Gagal fetch dari Supabase:', e);
         }
-        
-        if (urlData && urlData.url) {
-          // Update clicks
-          urlData.clicks = (urlData.clicks || 0) + 1;
-          
-          if (isOnline) {
-            try {
-              await supabaseUpdateClicks(shortCode, urlData.clicks);
-            } catch (e) {
-              console.warn('Gagal update clicks:', e);
-            }
-          }
-          
-          localStorage.setItem('staa_bento_links', JSON.stringify(linkDataCache));
-          
-          // Tampilkan URL dan mulai countdown
-          document.getElementById('redirectUrlDisplay').textContent = urlData.url;
-          startRedirectCountdown(urlData.url);
-        } else {
-          // URL tidak ditemukan
-          document.getElementById('redirectUrlDisplay').textContent = '❌ Short URL tidak ditemukan';
-          document.getElementById('countdownNumber').textContent = '!';
-          
-          showToast('❌ Short URL tidak ditemukan', 'error');
-          
-          // Kembali ke halaman utama setelah 3 detik
-          setTimeout(() => {
-            cancelRedirect();
-          }, 3000);
-        }
-      } catch (e) {
-        console.error('Redirect error:', e);
-        document.getElementById('redirectUrlDisplay').textContent = '❌ Terjadi kesalahan';
-        document.getElementById('countdownNumber').textContent = '!';
-        
+      }
+      
+      if (urlData && urlData.url) {
+        startRedirect(shortCodeParam, urlData.url);
+      } else {
+        showToast('❌ Short URL tidak ditemukan', 'error');
         setTimeout(() => {
-          cancelRedirect();
-        }, 3000);
+          if (window.history && window.history.replaceState) {
+            window.history.replaceState({}, document.title, BASE_PATH || '/');
+          }
+        }, 2000);
       }
     }
 
     // ==================== INIT ====================
     async function init() {
-      // Load theme
       const savedTheme = localStorage.getItem('theme') || 'light';
       document.documentElement.setAttribute('data-theme', savedTheme);
       document.querySelector('#themeToggle i').className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
       
-      // Load data lokal dulu
       linkDataCache = JSON.parse(localStorage.getItem('staa_bento_links') || '{}');
       updateStats();
       
-      // Coba koneksi ke Supabase
       try {
         const supabaseData = await supabaseFetchAll();
         linkDataCache = supabaseData;
@@ -1250,10 +1639,8 @@
         updateStats();
       }
       
-      // Handle redirect jika ada parameter 'r'
       await handleRedirect();
       
-      // Enter key listeners
       document.getElementById('longUrl').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') shortenURL();
       });
@@ -1262,7 +1649,6 @@
       });
     }
 
-    // Jalankan
     init();
   </script>
 </body>
