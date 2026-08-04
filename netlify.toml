@@ -2,8 +2,8 @@
   publish = "."
 
 [[redirects]]
-  from = "/s/*"
-  to = "/redirect.html?code=:splat"
+  from = "/s/:code"
+  to = "/redirect.html?code=:code"
   status = 200
   force = true
 
